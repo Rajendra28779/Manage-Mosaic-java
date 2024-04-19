@@ -40,8 +40,14 @@ public class MstUserModel {
 	@Column(name = "group_Id")
 	private Integer groupId;
 	
+	@Column(name = "firstname")
+	private String firstName;
+	
 	@Column(name = "fullname")
-	private String fullName;
+	private String fullname;
+	
+	@Column(name = "lastname")
+	private String lastName;
 	
 	@Column(name = "email")
 	private String email;
@@ -49,21 +55,24 @@ public class MstUserModel {
 	@Column(name = "mobileno")
 	private String mobileNo;
 	
+	@Column(name = "gender")
+	private String gender;
+	
 	@Column(name = "address")
 	private String address;
 	
 	@Column(name = "created_by")
-	private Long created_By;
+	private Long createdBy;
 	
 	@Column(name = "created_on")	
-	private Date created_On;
+	private Date createdOn;
 	
 	@Column(name = "updated_by")
-	private Long updated_By;
+	private Long updatedBy;
 	
 	@Column(name = "updated_on")
-	private Date updated_On;
+	private Date updatedOn;
 	
 	@Column(name = "status_flag")
-	private Integer status_Flag;
+	private Integer statusFlag;
 }
