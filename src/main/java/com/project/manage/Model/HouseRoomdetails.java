@@ -29,7 +29,7 @@ public class HouseRoomdetails {
 //	@GeneratedValue(generator = "catInc")
 	private Long rooddetailsId;
 	
-	@Column(name = "username")
+	@Column(name = "roomNo")
 	private String roomNo;
 	
 	@Column(name = "allot_person")

@@ -19,11 +19,17 @@ import com.project.manage.Model.MstUserModel;
 public interface MstUserRepository extends JpaRepository<MstUserModel, Long> {
 
 	MstUserModel findByUserName(String username);
+	
+	@Query("from MstUserModel where email=:email and statusFlag=0")
+	MstUserModel findByEmail(String email);
+
+	@Query("from MstUserModel where mobileNo=:userName and statusFlag=0")
+	MstUserModel findBymobile(String userName);
 
 	MstUserModel findByUserNameIgnoreCase(String userName);
 	
 
-	@Query("select count(*) from MstUserModel where lower(userName)=:username")
+	@Query("select count(*) from MstUserModel where userName=:username")
 	Integer usernamecheck(String username);
 	
 	@Query("select count(*) from MstUserModel where email=:email")
@@ -31,5 +37,6 @@ public interface MstUserRepository extends JpaRepository<MstUserModel, Long> {
 
 	@Query("Select Count(1) from MstUserModel where mobileNo=:mobileNo")
 	Integer phonenocheck(String mobileNo);
+	
 
 }

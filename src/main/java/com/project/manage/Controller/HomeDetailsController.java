@@ -78,7 +78,21 @@ public class HomeDetailsController {
 		ResponseBean bean=new ResponseBean();
 		try {
 			System.out.println(housedetailsbean);
-//			bean=homedetailsserv.submitdetails(homeDetails);
+			bean=homedetailsserv.submitdetails(housedetailsbean);
+		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@GetMapping("/getroomdetails")
+	public ResponseBean getroomdetails(@RequestParam(value = "userid",required = false) Long userid,
+			@RequestParam(value = "housedetails",required = false) Long housedetails) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			bean=homedetailsserv.getroomdetails(userid,housedetails);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");
