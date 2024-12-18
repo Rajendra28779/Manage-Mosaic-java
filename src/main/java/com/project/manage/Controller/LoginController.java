@@ -53,8 +53,8 @@ public class LoginController {
 	            String pictureUrl = payload.get("picture").toString();
 	            System.out.println(email);System.out.println(name);
 	            System.out.println(userId);
-	            System.out.println(pictureUrl);
-	            return ResponseEntity.ok(loginserv.loginfrmgoogle(email,name));	            
+	            System.out.println(pictureUrl);//loginserv.loginfrmgoogle(email,name)
+	            return ResponseEntity.ok("ohk");	            
 	        } else {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
 	        }
