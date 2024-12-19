@@ -5,7 +5,9 @@ package com.project.manage.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,7 @@ import com.project.manage.Model.HouseRoomdetails;
 import com.project.manage.Repository.HomeDetailsRepository;
 import com.project.manage.Repository.HouseRoomdetailsRepository;
 import com.project.manage.Service.HomeDetailsService;
+import com.project.manage.Util.CustomCheckedException;
 
 /**
  * 
@@ -39,9 +42,9 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 			homeDetails.setStatutsFlag(0);
 			homeDetailsrepo.save(homeDetails);
 			bean.setStatus(HttpStatus.OK.value());
-			bean.setMessage("Success");
+			bean.setMessage("Successful");
 		}catch (Exception e) {
-			throw new Exception(e);
+			throw new CustomCheckedException(e);
 		}
 		return bean;
 	}
@@ -50,54 +53,17 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	public ResponseBean gethomedetails(Long userid) throws Exception {
 		ResponseBean bean=new ResponseBean();
 		try {
+			bean.setRecord(homeDetailsrepo.gethomelist(userid));
 			bean.setStatus(HttpStatus.OK.value());
-			bean.setMessage("Success");
-			bean.setRecord(homeDetailsrepo.getroomdetails(userid));
+			bean.setMessage("Success");			
 		}catch (Exception e) {
-			throw new Exception(e);
+			throw new CustomCheckedException(e);
 		}
 		return bean;
-	}
+	}	
 
 	@Override
-	public ResponseBean inactiveroomdetails(Long detailsid) throws Exception {
-		ResponseBean bean=new ResponseBean();
-		try {
-			HomeDetails details=homeDetailsrepo.findById(detailsid).get();
-			details.setStatutsFlag(1);
-			homeDetailsrepo.save(details);
-			bean.setStatus(HttpStatus.OK.value());
-			bean.setMessage("Success");
-		}catch (Exception e) {
-			throw new Exception(e);
-		}
-		return bean;
-	}
-
-	@Override
-	public ResponseBean submitdetails(HousedetailsBean housedetailsbean) throws Exception {
-		ResponseBean bean=new ResponseBean();
-		List<HouseRoomdetails> list=new ArrayList<>();
-		try {
-			for(HouseRoomdetails house:housedetailsbean.getRoomdetails()) {
-				house.setOwneruserid(housedetailsbean.getUserid());
-				house.setHouseid(housedetailsbean.getHousedetails());	
-				house.setAllotperson(house.getAllotperson()==""?null:house.getAllotperson());
-				house.setStatusflag(0);
-				house.setCreateon(new Date());
-				list.add(house);
-			}
-			homeroomdetailsrepo.saveAll(list);
-			bean.setStatus(HttpStatus.OK.value());
-			bean.setMessage("Success");
-		} catch (Exception e) {
-			throw new Exception(e);
-		}
-		return bean;
-	}
-
-	@Override
-	public ResponseBean getroomdetails(Long userid, Long housedetails) throws Exception {
+	public ResponseBean getdisplayhousedetails(Long userid, Long housedetails) throws Exception {
 		ResponseBean bean=new ResponseBean();
 		List<HouseRoomdetails> list=new ArrayList<>();
 		try {
@@ -106,7 +72,51 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 			bean.setRecord(list);
 			bean.setMessage("Success");
 		} catch (Exception e) {
-			throw new Exception(e);
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean gethousemasterData(Long userid) throws Exception {
+		ResponseBean bean=new ResponseBean();
+		try {
+			List<Object> objlist=new ArrayList<>();
+			List<HomeDetails> list=homeDetailsrepo.gethomelist(userid);
+			for(HomeDetails dap:list) {
+				Map<String,Object> map=new HashMap<>();
+				map.put("homeId",dap.getHouseId());
+				map.put("homeName",dap.getHomeName());
+				map.put("location",dap.getHomeLocation());
+				objlist.add(map);
+			}			
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setRecord(objlist);
+			bean.setMessage("Success");
+		} catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean getroommasterData(Long userid, Long houseId) throws Exception {
+		ResponseBean bean=new ResponseBean();
+		try {
+			List<Object> objlist=new ArrayList<>();
+			List<HouseRoomdetails> list=homeroomdetailsrepo.findByOwneruseridAndHouseid(userid,houseId);
+			for(HouseRoomdetails dap:list) {
+				Map<String,Object> map=new HashMap<>();
+				map.put("roomId",dap.getRoomId());
+				map.put("houseId",dap.getHouseId());
+				map.put("roomNo",dap.getRoomno());
+				objlist.add(map);
+			}			
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setRecord(objlist);
+			bean.setMessage("Success");
+		} catch (Exception e) {
+			throw new CustomCheckedException(e);
 		}
 		return bean;
 	}

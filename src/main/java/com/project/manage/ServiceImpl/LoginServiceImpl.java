@@ -61,7 +61,6 @@ public class LoginServiceImpl implements LoginService {
 							data.put("phoneNo", usermodel1.getMobileNo() != null ? usermodel1.getMobileNo() : "");
 							data.put("fullName", usermodel1.getFullname() != null ? usermodel1.getFullname() : "");
 							data.put("firstName", usermodel1.getFirstName() != null ? usermodel1.getFirstName() : "");
-							data.put("gender", usermodel1.getGender() != null ? usermodel1.getGender() : "");
 							data.put("address", usermodel1.getAddress() != null ? usermodel1.getAddress() : "");
 							data.put("email", usermodel1.getEmail() != null ? usermodel1.getEmail() : "");
 						
@@ -133,7 +132,6 @@ public class LoginServiceImpl implements LoginService {
 				map.put("phoneNo", userdetails.getMobileNo() != null ? userdetails.getMobileNo() : "");
 				map.put("fullName", userdetails.getFullname() != null ? userdetails.getFullname() : "");
 				map.put("firstName", userdetails.getFirstName() != null ? userdetails.getFirstName() : "");
-				map.put("gender", userdetails.getGender() != null ? userdetails.getGender() : "");
 				map.put("address", userdetails.getAddress() != null ? userdetails.getAddress() : "");
 				map.put("email", userdetails.getEmail() != null ? userdetails.getEmail() : "");
 			
@@ -166,7 +164,6 @@ public class LoginServiceImpl implements LoginService {
 				usermodel.setUserName(username);
 				usermodel.setFirstName(name.split(" ")[0]);
 				usermodel.setGroupId(2);
-				usermodel.setCreatedBy(1l);
 				usermodel.setCreatedOn(Calendar.getInstance().getTime());
 				usermodel.setStatusFlag(0);
 				usermodel=userrepo.save(usermodel);

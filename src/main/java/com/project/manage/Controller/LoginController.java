@@ -41,7 +41,7 @@ public class LoginController {
 	public ResponseEntity<?> verifyToken(@RequestBody Map<String, String> body) {
 	    String token = body.get("token");
 	    GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
-	        .setAudience(Collections.singletonList("662111002101-797vmf6dcffvn0vbkr96gj6u01rfsmgd.apps.googleusercontent.com"))
+	        .setAudience(Collections.singletonList("243335143053-rmpl6ttt4srog99fvhlmmr1hafkcug7o.apps.googleusercontent.com"))
 	        .build();
 	    try {
 	        GoogleIdToken idToken = verifier.verify(token);

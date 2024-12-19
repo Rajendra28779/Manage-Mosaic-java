@@ -18,10 +18,10 @@ public interface HomeDetailsService {
 
 	ResponseBean gethomedetails(Long userid) throws Exception;
 
-	ResponseBean inactiveroomdetails(Long detailsid) throws Exception;
+	ResponseBean getdisplayhousedetails(Long userid, Long housedetails) throws Exception;
 
-	ResponseBean submitdetails(HousedetailsBean housedetailsbean) throws Exception;
+	ResponseBean gethousemasterData(Long userid) throws Exception;
 
-	ResponseBean getroomdetails(Long userid, Long housedetails) throws Exception;
+	ResponseBean getroommasterData(Long userid, Long houseId) throws Exception;
 
 }

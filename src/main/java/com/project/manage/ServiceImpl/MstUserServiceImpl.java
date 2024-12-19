@@ -40,7 +40,6 @@ public class MstUserServiceImpl implements MstUserService {
 						usermodel.setPassword(passwordEncoder.encode(usermodel.getPassword()));
 						usermodel.setFullname(usermodel.getFirstName().trim()+" "+usermodel.getLastName().trim());
 						usermodel.setGroupId(2);
-						usermodel.setCreatedBy(1l);
 						usermodel.setCreatedOn(Calendar.getInstance().getTime());
 						usermodel.setStatusFlag(0);
 						mstuserrepo.save(usermodel);
