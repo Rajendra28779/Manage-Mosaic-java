@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.project.manage.Model.MstUserModel;
@@ -32,6 +33,9 @@ public class LoginServiceImpl implements LoginService {
 	
 	@Autowired
 	private MstUserRepository userrepo;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
     private JwtUtil jwtUtil;
@@ -158,7 +162,7 @@ public class LoginServiceImpl implements LoginService {
 				usernamecheck=userrepo.usernamecheck(username.trim());
 			}				
 			if(usernamecheck==0) {
-//				usermodel.setPassword(passwordEncoder.encode(usermodel.getPassword()));
+				usermodel.setPassword(passwordEncoder.encode("Manage@12"));
 				usermodel.setFullname(name);
 				usermodel.setEmail(email);
 				usermodel.setUserName(username);

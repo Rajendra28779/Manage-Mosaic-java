@@ -4,6 +4,7 @@
 package com.project.manage.ServiceImpl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +31,6 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 
 	@Autowired
 	private HomeDetailsRepository homeDetailsrepo;
-	
 	
 	@Autowired
 	private HouseRoomdetailsRepository homeroomdetailsrepo;
@@ -65,9 +65,20 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	@Override
 	public ResponseBean getdisplayhousedetails(Long userid, Long housedetails) throws Exception {
 		ResponseBean bean=new ResponseBean();
-		List<HouseRoomdetails> list=new ArrayList<>();
+		List<Object> list=new ArrayList<>();
 		try {
-			list=homeroomdetailsrepo.findByOwneruseridAndHouseid(userid,housedetails);
+			List<Object[]> objlist=homeroomdetailsrepo.getdisplayhousedetails(userid,housedetails);
+			for(Object[] obj:objlist) {
+				Map<String,Object> map = new HashMap<>();
+				
+//				SELECT H.HOUSE_ID,H.HOUSE_NAME,H.ADDRESS,COUNT(*)
+//				FROM TBL_MST_HM_HOMEDETAILS H
+//				LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON H.HOUSE_ID=R.HOUSE_ID
+//				WHERE H.HOUSE_ID=2 AND H.OWNER_ID=1
+//				ORDER BY H.HOUSE_ID,H.HOUSE_NAME,H.ADDRESS;
+				
+				list.add(map);
+			}
 			bean.setStatus(HttpStatus.OK.value());
 			bean.setRecord(list);
 			bean.setMessage("Success");
@@ -116,6 +127,21 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 			bean.setRecord(objlist);
 			bean.setMessage("Success");
 		} catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean addroomdetails(HouseRoomdetails roomdetails) throws CustomCheckedException {
+		ResponseBean bean=new ResponseBean();
+		try {
+			roomdetails.setCreatedOn(Calendar.getInstance().getTime());
+			roomdetails.setStatusflag(0);
+			homeroomdetailsrepo.save(roomdetails);
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setMessage("Success");
+		}catch (Exception e) {
 			throw new CustomCheckedException(e);
 		}
 		return bean;

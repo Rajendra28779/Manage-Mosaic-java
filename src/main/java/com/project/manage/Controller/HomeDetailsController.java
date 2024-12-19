@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
+import com.project.manage.Model.HouseRoomdetails;
 import com.project.manage.Model.MstUserModel;
 import com.project.manage.Service.HomeDetailsService;
 import com.project.manage.Util.EncryptionUtils;
@@ -27,7 +28,7 @@ import com.project.manage.Util.EncryptionUtils;
  * 
  */
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin
 @RequestMapping(value = "/api")
 public class HomeDetailsController {
 	
@@ -75,7 +76,7 @@ public class HomeDetailsController {
 	}
 	
 	@GetMapping("/gethousemasterData")
-	public ResponseBean gethousemasterData(@RequestParam(value = "userid",required = false) Long userid) {
+	public ResponseBean gethousemasterData(@RequestParam(value = "userId",required = false) Long userid) {
 		ResponseBean bean=new ResponseBean();
 		try {
 			bean=homedetailsserv.gethousemasterData(userid);
@@ -88,11 +89,24 @@ public class HomeDetailsController {
 	}
 	
 	@GetMapping("/getroommasterData")
-	public ResponseBean getroommasterData(@RequestParam(value = "userid",required = false) Long userid,
+	public ResponseBean getroommasterData(@RequestParam(value = "userId",required = false) Long userid,
 			@RequestParam(value = "houseId",required = false) Long houseId) {
 		ResponseBean bean=new ResponseBean();
 		try {
 			bean=homedetailsserv.getroommasterData(userid,houseId);
+		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@PostMapping("/addroomforhome")
+	public ResponseBean addroomforhome(@RequestBody HouseRoomdetails roomdetails) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			bean=homedetailsserv.addroomdetails(roomdetails);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");
