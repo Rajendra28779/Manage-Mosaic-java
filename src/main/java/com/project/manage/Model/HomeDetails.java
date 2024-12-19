@@ -19,28 +19,32 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="tbl_mst_user_homedetails")
+@Table(name="TBL_MST_HM_HOMEDETAILS")
 public class HomeDetails {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "details_id")
-//	@GenericGenerator(name = "catInc", strategy = "increment")
-//	@GeneratedValue(generator = "catInc")
-	private Long detailsid;
+	@Column(name = "HOUSE_ID")
+	private Long houseId;
 	
-	@Column(name = "userid")
-	private Long userid;
+	@Column(name = "OWNER_ID")
+	private Long ownerid;
 	
-	@Column(name = "home_name")
+	@Column(name = "HOUSE_NAME")
 	private String homeName;
 	
-	@Column(name = "home_location")
+	@Column(name = "ADDRESS")
 	private String homeLocation;
 	
-	@Column(name = "no_of_room")
+	@Column(name = "TOTAL_ROOM")
 	private Integer noofroom;
 	
-	@Column(name = "statuts_flag")
+	@Column(name = "TOTAL_FLOOR")
+	private Integer nooffloor;
+	
+	@Column(name = "CREATED_ON")
+	private Date createdOn;	
+	
+	@Column(name = "STATUSFLAG")
 	private Integer statutsFlag;
 }

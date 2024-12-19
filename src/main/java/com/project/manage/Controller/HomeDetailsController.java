@@ -34,8 +34,8 @@ public class HomeDetailsController {
 	@Autowired
 	private HomeDetailsService homedetailsserv;
 
-	@PostMapping("/addhomedetails")
-	public ResponseBean loginapi(@RequestBody HomeDetails homeDetails) {
+	@PostMapping("/addnewhome")
+	public ResponseBean addnewhome(@RequestBody HomeDetails homeDetails) {
 		ResponseBean bean=new ResponseBean();
 		try {
 			bean=homedetailsserv.addhomedetails(homeDetails);
@@ -58,13 +58,14 @@ public class HomeDetailsController {
 			bean.setErrorMessage(e.getMessage());
 		}
 		return bean;
-	}
+	}	
 	
-	@GetMapping("/inactiveroomdetails")
-	public ResponseBean inactiveroomdetails(@RequestParam(value = "detailsid",required = false) Long detailsid) {
+	@GetMapping("/getdisplayhousedetails")
+	public ResponseBean getdisplayhousedetails(@RequestParam(value = "userid",required = false) Long userid,
+			@RequestParam(value = "houseId",required = false) Long houseId) {
 		ResponseBean bean=new ResponseBean();
 		try {
-			bean=homedetailsserv.inactiveroomdetails(detailsid);
+			bean=homedetailsserv.getdisplayhousedetails(userid,houseId);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");
@@ -73,12 +74,11 @@ public class HomeDetailsController {
 		return bean;
 	}
 	
-	@PostMapping("/submitdetails")
-	public ResponseBean submitdetails(@RequestBody HousedetailsBean housedetailsbean) {
+	@GetMapping("/gethousemasterData")
+	public ResponseBean gethousemasterData(@RequestParam(value = "userid",required = false) Long userid) {
 		ResponseBean bean=new ResponseBean();
 		try {
-			System.out.println(housedetailsbean);
-			bean=homedetailsserv.submitdetails(housedetailsbean);
+			bean=homedetailsserv.gethousemasterData(userid);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");
@@ -87,12 +87,12 @@ public class HomeDetailsController {
 		return bean;
 	}
 	
-	@GetMapping("/getroomdetails")
-	public ResponseBean getroomdetails(@RequestParam(value = "userid",required = false) Long userid,
-			@RequestParam(value = "housedetails",required = false) Long housedetails) {
+	@GetMapping("/getroommasterData")
+	public ResponseBean getroommasterData(@RequestParam(value = "userid",required = false) Long userid,
+			@RequestParam(value = "houseId",required = false) Long houseId) {
 		ResponseBean bean=new ResponseBean();
 		try {
-			bean=homedetailsserv.getroomdetails(userid,housedetails);
+			bean=homedetailsserv.getroommasterData(userid,houseId);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");

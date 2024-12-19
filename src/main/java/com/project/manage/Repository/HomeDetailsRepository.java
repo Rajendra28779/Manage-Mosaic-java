@@ -17,7 +17,7 @@ import com.project.manage.Model.HomeDetails;
 @Repository
 public interface HomeDetailsRepository extends JpaRepository<HomeDetails, Long> {
 
-	@Query("from HomeDetails where userid=:userid and statutsFlag=0 order by statutsFlag,homeName")
-	List<HomeDetails> getroomdetails(Long userid);
+	@Query("from HomeDetails where ownerid=:userid and statutsFlag=0 order by homeName")
+	List<HomeDetails> gethomelist(Long userid);
 
 }

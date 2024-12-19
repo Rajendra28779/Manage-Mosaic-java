@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.csrf().disable().authorizeRequests().antMatchers(
 				"/login/loginapi","/login/google",
-					"/api/createUser","/api/checkusername"
+					"/api/createUser","/api/checkusername","/api/contactrqst"
 				).permitAll().anyRequest().
 		authenticated().and().exceptionHandling().
 		and().sessionManagement()

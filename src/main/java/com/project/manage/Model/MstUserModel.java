@@ -21,58 +21,44 @@ import lombok.Data;
  */
 @Data
 @Entity
-@Table(name="tbl_mst_userdata")
+@Table(name="TBL_MST_USERDETAILS")
 public class MstUserModel {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name = "userid")
-//	@GenericGenerator(name = "catInc", strategy = "increment")
-//	@GeneratedValue(generator = "catInc")
+	@Column(name = "USERID")
 	private Long userId;
 	
-	@Column(name = "username")
+	@Column(name = "USERNAME")
 	private String userName;
 	
-	@Column(name = "password")
+	@Column(name = "PASS_WORD")
 	private String password;
 	
-	@Column(name = "group_Id")
+	@Column(name = "GROUPID")
 	private Integer groupId;
 	
-	@Column(name = "firstname")
+	@Column(name = "FIRSTNAME")
 	private String firstName;
 	
-	@Column(name = "fullname")
+	@Column(name = "FULLNAME")
 	private String fullname;
 	
-	@Column(name = "lastname")
+	@Column(name = "LASTNAME")
 	private String lastName;
 	
-	@Column(name = "email")
+	@Column(name = "EMAIL")
 	private String email;
 	
-	@Column(name = "mobileno")
+	@Column(name = "MOBILE")
 	private String mobileNo;
 	
-	@Column(name = "gender")
-	private String gender;
+	@Column(name = "ADDRESS")
+	private String address;	
 	
-	@Column(name = "address")
-	private String address;
+	@Column(name = "CREATED_ON")
+	private Date createdOn;	
 	
-	@Column(name = "created_by")
-	private Long createdBy;
-	
-	@Column(name = "created_on")	
-	private Date createdOn;
-	
-	@Column(name = "updated_by")
-	private Long updatedBy;
-	
-	@Column(name = "updated_on")
-	private Date updatedOn;
-	
-	@Column(name = "status_flag")
+	@Column(name = "STATUSFLAG")
 	private Integer statusFlag;
 }
