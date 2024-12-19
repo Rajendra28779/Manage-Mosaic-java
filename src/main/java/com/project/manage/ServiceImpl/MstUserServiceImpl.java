@@ -33,8 +33,6 @@ public class MstUserServiceImpl implements MstUserService {
 	public ResponseBean createUser(MstUserModel usermodel) throws Exception {
 		ResponseBean bean=new ResponseBean();
 		try {
-			Integer usernamecheck=mstuserrepo.usernamecheck(usermodel.getUserName().toLowerCase());
-			if(usernamecheck==0) {
 				Integer emailcheck=mstuserrepo.emailcheck(usermodel.getEmail());
 				if(emailcheck==0) {
 					Integer phonenocheck=mstuserrepo.phonenocheck(usermodel.getMobileNo());
@@ -56,10 +54,6 @@ public class MstUserServiceImpl implements MstUserService {
 					bean.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
 					bean.setMessage("Email Taken By Another User !");
 				}
-			}else {
-				bean.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
-				bean.setMessage("UserName Taken By Another User !");
-			}			
 		}catch (Exception e) {
 			throw new Exception(e);
 		}

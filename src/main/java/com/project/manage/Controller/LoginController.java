@@ -49,12 +49,7 @@ public class LoginController {
 	            Payload payload = idToken.getPayload();
 	            String email = payload.get("email").toString();
 	            String name = payload.get("name").toString();
-	            String userId = payload.getSubject();
-	            String pictureUrl = payload.get("picture").toString();
-	            System.out.println(email);System.out.println(name);
-	            System.out.println(userId);
-	            System.out.println(pictureUrl);//loginserv.loginfrmgoogle(email,name)
-	            return ResponseEntity.ok("ohk");	            
+	            return ResponseEntity.ok(loginserv.loginfrmgoogle(email,name));	            
 	        } else {
 	            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
 	        }

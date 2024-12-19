@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import lombok.Data;
 
 /**
@@ -23,10 +25,10 @@ import lombok.Data;
 public class HomeDetails {
 
 	@Id
-	@GeneratedValue(strategy=GenerationType.IDENTITY)
+//	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(name = "details_id")
-//	@GenericGenerator(name = "catInc", strategy = "increment")
-//	@GeneratedValue(generator = "catInc")
+	@GenericGenerator(name = "catInc", strategy = "increment")
+	@GeneratedValue(generator = "catInc")
 	private Long detailsid;
 	
 	@Column(name = "userid")

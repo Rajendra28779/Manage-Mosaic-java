@@ -42,10 +42,10 @@ public class LoginServiceImpl implements LoginService {
 		try {
 			MstUserModel usermodel1=null;
 				usermodel1=userrepo.findByUserName(usermodel.getUserName());
-			if(usermodel1!=null) {
+			if(usermodel1==null) {
 				usermodel1=userrepo.findByEmail(usermodel.getUserName());
 			}
-			if(usermodel1!=null) {
+			if(usermodel1==null) {
 				usermodel1=userrepo.findBymobile(usermodel.getUserName());
 			}
 			if(usermodel1!=null) {
@@ -53,26 +53,28 @@ public class LoginServiceImpl implements LoginService {
 					Authentication auth = null;
 					try {
 						auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-								usermodel.getUserName(), usermodel.getPassword()));
+								usermodel1.getUserName(), usermodel.getPassword()));
 						if(auth!=null) {
 							Map<String,Object> data=new HashMap<>();
 							data.put("userId", usermodel1.getUserId());
 							data.put("userName", usermodel1.getUserName() != null ? usermodel1.getUserName() : "");
 							data.put("phoneNo", usermodel1.getMobileNo() != null ? usermodel1.getMobileNo() : "");
 							data.put("fullName", usermodel1.getFullname() != null ? usermodel1.getFullname() : "");
+							data.put("firstName", usermodel1.getFirstName() != null ? usermodel1.getFirstName() : "");
 							data.put("gender", usermodel1.getGender() != null ? usermodel1.getGender() : "");
 							data.put("address", usermodel1.getAddress() != null ? usermodel1.getAddress() : "");
 							data.put("email", usermodel1.getEmail() != null ? usermodel1.getEmail() : "");
 						
 						map.put("userdata", data);
 						map.put("token", "Bearer " + jwtUtil.generateToken(usermodel1.getUserName()));
-						map.put("stratus", HttpStatus.OK);
+						map.put("status", HttpStatus.OK.value());
 						map.put("message", "Login Successful");
 						}else {
 							map.put("status", HttpStatus.BAD_REQUEST.value());
 							map.put("message", "Authentication Failed");
 						}
 					}catch (Exception e) {
+						e.printStackTrace();						
 						map.put("status", HttpStatus.BAD_REQUEST.value());
 						map.put("message", "Authentication Failed");
 					}					
@@ -130,17 +132,18 @@ public class LoginServiceImpl implements LoginService {
 				map.put("userName", userdetails.getUserName() != null ? userdetails.getUserName() : "");
 				map.put("phoneNo", userdetails.getMobileNo() != null ? userdetails.getMobileNo() : "");
 				map.put("fullName", userdetails.getFullname() != null ? userdetails.getFullname() : "");
+				map.put("firstName", userdetails.getFirstName() != null ? userdetails.getFirstName() : "");
 				map.put("gender", userdetails.getGender() != null ? userdetails.getGender() : "");
 				map.put("address", userdetails.getAddress() != null ? userdetails.getAddress() : "");
 				map.put("email", userdetails.getEmail() != null ? userdetails.getEmail() : "");
 			
 			response.put("userdata", map);
 			response.put("token", "Bearer " + jwtUtil.generateToken(userdetails.getUserName()));
-			response.put("stratus", HttpStatus.OK);
+			response.put("status", HttpStatus.OK.value());
 			response.put("message", "Login Successful");
 			
 		}catch (Exception e) {
-			response.put("stratus", HttpStatus.BAD_REQUEST);
+			response.put("status", HttpStatus.BAD_REQUEST.value());
 			response.put("message", "Something Went Wrong !");
 			response.put("error", e.getMessage());
 		}
@@ -151,13 +154,17 @@ public class LoginServiceImpl implements LoginService {
 		MstUserModel usermodel=new MstUserModel();
 		try {
 			Integer usernamecheck=1;
+			String username="";
 			while(usernamecheck!=0) {
-				String username=createuserName(name);
+				username=createuserName(name);
 				usernamecheck=userrepo.usernamecheck(username.trim());
 			}				
 			if(usernamecheck==0) {
 //				usermodel.setPassword(passwordEncoder.encode(usermodel.getPassword()));
 				usermodel.setFullname(name);
+				usermodel.setEmail(email);
+				usermodel.setUserName(username);
+				usermodel.setFirstName(name.split(" ")[0]);
 				usermodel.setGroupId(2);
 				usermodel.setCreatedBy(1l);
 				usermodel.setCreatedOn(Calendar.getInstance().getTime());
