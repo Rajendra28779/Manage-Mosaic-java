@@ -5,6 +5,8 @@ package com.project.manage.Service;
 
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
@@ -26,6 +28,7 @@ public interface HomeDetailsService {
 
 	ResponseBean getroommasterData(Long userid, Long houseId) throws Exception;
 
-	ResponseBean addroomdetails(HouseRoomdetails roomdetails) throws CustomCheckedException;
+	ResponseBean addroomdetails(HouseRoomdetails roomdetails, MultipartFile image1, MultipartFile image2,
+			MultipartFile image3, MultipartFile image4, MultipartFile image5) throws CustomCheckedException;
 
 }

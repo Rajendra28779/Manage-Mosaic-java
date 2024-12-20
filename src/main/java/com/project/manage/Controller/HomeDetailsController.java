@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
@@ -103,10 +104,15 @@ public class HomeDetailsController {
 	}
 	
 	@PostMapping("/addroomforhome")
-	public ResponseBean addroomforhome(@RequestBody HouseRoomdetails roomdetails) {
+	public ResponseBean addroomforhome(@RequestBody HouseRoomdetails roomdetails,
+			@RequestParam(value = "image1",required = false) MultipartFile image1,
+			@RequestParam(value = "image2",required = false) MultipartFile image2,
+			@RequestParam(value = "image3",required = false) MultipartFile image3,
+			@RequestParam(value = "image4",required = false) MultipartFile image4,
+			@RequestParam(value = "image5",required = false) MultipartFile image5) {
 		ResponseBean bean=new ResponseBean();
 		try {
-			bean=homedetailsserv.addroomdetails(roomdetails);
+			bean=homedetailsserv.addroomdetails(roomdetails,image1,image2,image3,image4,image5);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");

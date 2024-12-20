@@ -13,6 +13,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
@@ -20,6 +21,7 @@ import com.project.manage.Model.HomeDetails;
 import com.project.manage.Model.HouseRoomdetails;
 import com.project.manage.Repository.HomeDetailsRepository;
 import com.project.manage.Repository.HouseRoomdetailsRepository;
+import com.project.manage.Service.CommenService;
 import com.project.manage.Service.HomeDetailsService;
 import com.project.manage.Util.CustomCheckedException;
 
@@ -34,6 +36,9 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	
 	@Autowired
 	private HouseRoomdetailsRepository homeroomdetailsrepo;
+	
+	@Autowired
+	private CommenService commenService;
 	
 	@Override
 	public ResponseBean addhomedetails(HomeDetails homeDetails) throws Exception {
@@ -133,12 +138,49 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	}
 
 	@Override
-	public ResponseBean addroomdetails(HouseRoomdetails roomdetails) throws CustomCheckedException {
+	public ResponseBean addroomdetails(HouseRoomdetails roomdetails, MultipartFile image1, MultipartFile image2, 
+			MultipartFile image3, MultipartFile image4, MultipartFile image5) throws CustomCheckedException {
 		ResponseBean bean=new ResponseBean();
 		try {
+			
+			if(image1!=null) {
+				String FileName=commenService.saveroomimage(image1,roomdetails.getOwnerId(),roomdetails.getHouseId());
+				roomdetails.setImage01(FileName);
+			}else {
+				bean.setStatus(HttpStatus.BAD_REQUEST.value());
+				bean.setMessage("Please Upload Image1");
+				return bean;
+			}
+			
+			if(image2!=null) {
+				String FileName=commenService.saveroomimage(image2,roomdetails.getOwnerId(),roomdetails.getHouseId());
+				roomdetails.setImage02(FileName);
+			}else {
+				bean.setStatus(HttpStatus.BAD_REQUEST.value());
+				bean.setMessage("Please Upload Image2");
+				return bean;
+			}
+			
+			if(image3!=null) {
+				String FileName=commenService.saveroomimage(image3,roomdetails.getOwnerId(),roomdetails.getHouseId());
+				roomdetails.setImage03(FileName);
+			}
+			
+			if(image4!=null) {
+				String FileName=commenService.saveroomimage(image4,roomdetails.getOwnerId(),roomdetails.getHouseId());
+				roomdetails.setImage04(FileName);
+			}
+			
+			if(image5!=null) {
+				String FileName=commenService.saveroomimage(image5,roomdetails.getOwnerId(),roomdetails.getHouseId());
+				roomdetails.setImage05(FileName);
+			}			
+			
+			
 			roomdetails.setCreatedOn(Calendar.getInstance().getTime());
 			roomdetails.setStatusflag(0);
-			homeroomdetailsrepo.save(roomdetails);
+			System.out.println(roomdetails);
+//			homeroomdetailsrepo.save(roomdetails);
 			bean.setStatus(HttpStatus.OK.value());
 			bean.setMessage("Success");
 		}catch (Exception e) {

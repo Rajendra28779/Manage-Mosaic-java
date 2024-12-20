@@ -3,6 +3,8 @@
  */
 package com.project.manage.ServiceImpl;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +15,11 @@ import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Service.CommenService;
+import com.project.manage.Util.CommenfileUpload;
 import com.project.manage.Util.CustomCheckedException;
 
 /**
@@ -114,6 +118,24 @@ public class CommenServiceImpl implements CommenService {
 			}			
 		}
 		
+	}
+
+	@Override
+	public String saveroomimage(MultipartFile image1, Long ownerId, Long houseId) throws CustomCheckedException {
+		String coustemFilename=null;
+		try {
+			String fileLocation=env.getProperty("file.roomImage.folder");
+			String fileName = image1.getOriginalFilename();
+			Timestamp instant = Timestamp.from(Instant.now());
+			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+			String fileprifx=env.getProperty("file.roomImage.prefix");
+			coustemFilename=fileprifx + "_"+ ownerId + "_" + houseId + "_"
+					+ instant.toString().replaceAll("[,-.:\\s]", "")+"."+ fileExtension;
+			coustemFilename = CommenfileUpload.commenfileUpload(image1, coustemFilename, fileLocation);
+		} catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return coustemFilename;
 	}
 
 }
