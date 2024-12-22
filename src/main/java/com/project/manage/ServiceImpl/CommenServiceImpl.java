@@ -3,9 +3,14 @@
  */
 package com.project.manage.ServiceImpl;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +23,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.manage.Bean.ResponseBean;
+import com.project.manage.Model.PaymentDetails;
+import com.project.manage.Model.RepairRequest;
+import com.project.manage.Model.TenantDetails;
+import com.project.manage.Repository.PaymentDetailsRepository;
+import com.project.manage.Repository.RepairRequestRepository;
+import com.project.manage.Repository.TenantDetailsRepository;
 import com.project.manage.Service.CommenService;
 import com.project.manage.Util.CommenfileUpload;
 import com.project.manage.Util.CustomCheckedException;
@@ -30,6 +41,12 @@ public class CommenServiceImpl implements CommenService {
 	
 	@Autowired
     private JavaMailSender mailSender;
+	
+	@Autowired
+	private TenantDetailsRepository tenantrepo;
+	
+	@Autowired
+	private PaymentDetailsRepository paymentdtlsrepo;
 	
 	@Autowired
 	private Environment env;
@@ -128,7 +145,7 @@ public class CommenServiceImpl implements CommenService {
 			String fileName = image1.getOriginalFilename();
 			Timestamp instant = Timestamp.from(Instant.now());
 			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
-			String fileprifx=env.getProperty("file.roomImage.prefix");
+			String fileprifx=env.getProperty("file.roomImage.prifix");
 			coustemFilename=fileprifx + "_"+ ownerId + "_" + houseId + "_"
 					+ instant.toString().replaceAll("[,-.:\\s]", "")+"."+ fileExtension;
 			coustemFilename = CommenfileUpload.commenfileUpload(image1, coustemFilename, fileLocation);
@@ -137,5 +154,24 @@ public class CommenServiceImpl implements CommenService {
 		}
 		return coustemFilename;
 	}
+
+	@Override
+	public String savetenantDoc(MultipartFile image1) throws CustomCheckedException {
+		String coustemFilename=null;
+		try {
+			String fileLocation=env.getProperty("file.tenant.doc");
+			String fileName = image1.getOriginalFilename();
+			Timestamp instant = Timestamp.from(Instant.now());
+			String fileExtension = fileName.substring(fileName.lastIndexOf(".") + 1);
+			String fileprifx=env.getProperty("file.tenant.doc.prifix");
+			coustemFilename=fileprifx + "_"+instant.toString().replaceAll("[,-.:\\s]", "")+"."+ fileExtension;
+			coustemFilename = CommenfileUpload.commenfileUpload(image1, coustemFilename, fileLocation);
+		} catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return coustemFilename;
+	}
+
+	
 
 }

@@ -22,8 +22,11 @@ import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
 import com.project.manage.Model.HouseRoomdetails;
 import com.project.manage.Model.MstUserModel;
+import com.project.manage.Model.TenantDetails;
+import com.project.manage.Repository.MstUserRepository;
 import com.project.manage.Service.HomeDetailsService;
 import com.project.manage.Util.EncryptionUtils;
+import com.project.manage.config.JwtFilter;
 
 /**
  * 
@@ -35,6 +38,9 @@ public class HomeDetailsController {
 	
 	@Autowired
 	private HomeDetailsService homedetailsserv;
+	
+	@Autowired
+	private MstUserRepository mastuserrepo;
 
 	@PostMapping("/addnewhome")
 	public ResponseBean addnewhome(@RequestBody HomeDetails homeDetails) {
@@ -63,15 +69,15 @@ public class HomeDetailsController {
 	}	
 	
 	@GetMapping("/getdisplayhousedetails")
-	public ResponseBean getdisplayhousedetails(@RequestParam(value = "userid",required = false) Long userid,
+	public Map<String, Object> getdisplayhousedetails(@RequestParam(value = "userid",required = false) Long userid,
 			@RequestParam(value = "houseId",required = false) Long houseId) {
-		ResponseBean bean=new ResponseBean();
+		Map<String, Object> bean=new HashMap<>();
 		try {
 			bean=homedetailsserv.getdisplayhousedetails(userid,houseId);
 		}catch (Exception e) {
-			bean.setStatus(HttpStatus.BAD_REQUEST.value());
-			bean.setMessage("Something Went Wrong");
-			bean.setErrorMessage(e.getMessage());
+			bean.put("status",HttpStatus.BAD_REQUEST.value());
+			bean.put("message","Something Went Wrong");
+			bean.put("error",e.getMessage());
 		}
 		return bean;
 	}
@@ -104,15 +110,76 @@ public class HomeDetailsController {
 	}
 	
 	@PostMapping("/addroomforhome")
-	public ResponseBean addroomforhome(@RequestBody HouseRoomdetails roomdetails,
+	public ResponseBean addroomforhome(HouseRoomdetails roomdetails,
 			@RequestParam(value = "image1",required = false) MultipartFile image1,
 			@RequestParam(value = "image2",required = false) MultipartFile image2,
 			@RequestParam(value = "image3",required = false) MultipartFile image3,
 			@RequestParam(value = "image4",required = false) MultipartFile image4,
-			@RequestParam(value = "image5",required = false) MultipartFile image5) {
+			@RequestParam(value = "image5",required = false) MultipartFile image5
+			) {
 		ResponseBean bean=new ResponseBean();
 		try {
 			bean=homedetailsserv.addroomdetails(roomdetails,image1,image2,image3,image4,image5);
+		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	} 
+	
+	@PostMapping("/addtenanttoroom")
+	public ResponseBean addtenanttoroom(TenantDetails tenantdetails,
+			@RequestParam(value = "image1",required = false) MultipartFile image1,
+			@RequestParam(value = "image2",required = false) MultipartFile image2,
+			@RequestParam(value = "image3",required = false) MultipartFile image3
+			) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			bean=homedetailsserv.addtenanttoroom(tenantdetails,image1,image2,image3);
+		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	} 
+	
+	@GetMapping("/viewtenanttoroom")
+	public ResponseBean addtenanttoroom() {
+		ResponseBean bean=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
+			bean=homedetailsserv.viewtenanttoroom(userid);
+		}catch (Exception e) {
+			e.printStackTrace();
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	} 
+	
+	@GetMapping("/gethousedetailsforuser")
+	public ResponseBean gethousedetailsforuser(@RequestParam(value = "phoneNo",required = false) String phoneNo) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			bean=homedetailsserv.gethousedetailsforuser(phoneNo);
+		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@GetMapping("/onChangeroomgettenanrdata")
+	public ResponseBean onChangeroomgettenanrdata(@RequestParam(value = "roomId",required = false) Long roomId,
+			@RequestParam(value = "houseId",required = false) Long houseId) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			bean=homedetailsserv.onChangeroomgettenanrdata(roomId,houseId);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");

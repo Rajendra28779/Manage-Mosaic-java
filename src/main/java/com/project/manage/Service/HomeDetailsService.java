@@ -11,6 +11,7 @@ import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
 import com.project.manage.Model.HouseRoomdetails;
+import com.project.manage.Model.TenantDetails;
 import com.project.manage.Util.CustomCheckedException;
 
 /**
@@ -22,7 +23,7 @@ public interface HomeDetailsService {
 
 	ResponseBean gethomedetails(Long userid) throws Exception;
 
-	ResponseBean getdisplayhousedetails(Long userid, Long housedetails) throws Exception;
+	Map<String, Object> getdisplayhousedetails(Long userid, Long housedetails) throws Exception;
 
 	ResponseBean gethousemasterData(Long userid) throws Exception;
 
@@ -30,5 +31,14 @@ public interface HomeDetailsService {
 
 	ResponseBean addroomdetails(HouseRoomdetails roomdetails, MultipartFile image1, MultipartFile image2,
 			MultipartFile image3, MultipartFile image4, MultipartFile image5) throws CustomCheckedException;
+
+	ResponseBean addtenanttoroom(TenantDetails tenantdetails, MultipartFile image1, MultipartFile image2,
+			MultipartFile image3) throws Exception;
+
+	ResponseBean gethousedetailsforuser(String phoneNo) throws Exception;
+
+	ResponseBean onChangeroomgettenanrdata(Long roomId, Long houseId) throws Exception;
+
+	ResponseBean viewtenanttoroom(Long userid) throws Exception;
 
 }

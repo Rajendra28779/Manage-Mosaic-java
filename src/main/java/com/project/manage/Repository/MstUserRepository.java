@@ -37,6 +37,9 @@ public interface MstUserRepository extends JpaRepository<MstUserModel, Long> {
 
 	@Query("Select Count(1) from MstUserModel where mobileNo=:mobileNo")
 	Integer phonenocheck(String mobileNo);
+
+	@Query("Select userId from MstUserModel where userName=:username")
+	Long getuserIdfromuserName(String username);
 	
 
 }

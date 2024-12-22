@@ -5,9 +5,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.security.web.header.writers.frameoptions.StaticAllowFromStrategy;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.project.manage.Repository.MstUserRepository;
 import com.project.manage.Service.MstUserService;
 import com.project.manage.ServiceImpl.CustomUserDetailsService;
 import com.project.manage.Util.JwtUtil;
@@ -26,6 +28,12 @@ public class JwtFilter extends OncePerRequestFilter {
 	
 	@Autowired
 	private CustomUserDetailsService service;
+	
+	private static String userNametoaccess="";
+	
+	public static String getusername() {
+		return userNametoaccess;
+	}
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
@@ -38,7 +46,9 @@ public class JwtFilter extends OncePerRequestFilter {
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			token = authorizationHeader.substring(7);
 			userName = jwtUtil.extractUsername(token);
-		}
+			userNametoaccess= jwtUtil.extractUsername(token);
+		}		
+		
 
 		if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
