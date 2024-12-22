@@ -38,8 +38,10 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON H.HOUSE_ID=T.HOUSE_ID AND T.OWNER_ID=H.OWNER_ID\r\n"
 			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON R.HOUSE_ID=T.HOUSE_ID AND R.ROOM_ID=T.ROOM_ID\r\n"
 			+ "WHERE T.STATUSFLAG=0 AND T.OWNER_ID=?1\r\n"
+			+ "AND T.HOUSE_ID = DECODE(?2,NULL,T.HOUSE_ID,?2) \r\n"
+			+ "AND T.ROOM_ID = DECODE(?3,NULL,T.ROOM_ID,?3) \r\n"
 			+ "ORDER BY T.CREATED_ON DESC", nativeQuery = true)
-	List<Object[]> viewtenanttoroom(Long userid);
+	List<Object[]> viewtenanttoroom(Long userid, Long houseId, Long roomId);
 
 	@Query( value ="SELECT TEN.TENANT_ID, ten.house_id,ten.room_id,\r\n"
 			+ "        ADD_MONTHS(NVL(PD.DUE_DATE, TEN.EFFECTIVE_DATE), 1) duedate,\r\n"

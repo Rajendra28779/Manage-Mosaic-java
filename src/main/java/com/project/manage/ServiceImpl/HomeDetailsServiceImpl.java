@@ -20,9 +20,11 @@ import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
 import com.project.manage.Model.HouseRoomdetails;
+import com.project.manage.Model.PaymentDetails;
 import com.project.manage.Model.TenantDetails;
 import com.project.manage.Repository.HomeDetailsRepository;
 import com.project.manage.Repository.HouseRoomdetailsRepository;
+import com.project.manage.Repository.PaymentDetailsRepository;
 import com.project.manage.Repository.TenantDetailsRepository;
 import com.project.manage.Service.CommenService;
 import com.project.manage.Service.HomeDetailsService;
@@ -42,6 +44,9 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	
 	@Autowired
 	private TenantDetailsRepository tenantdetailsRepo;
+	
+	@Autowired
+	private PaymentDetailsRepository paymentsrepo;
 	
 	@Autowired
 	private CommenService commenService;
@@ -103,6 +108,11 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 				map.put("effectiveDate", obj[8]);
 				map.put("advamt", obj[9]);
 				map.put("tenantId", obj[10]);
+				map.put("roomimg1", obj[11]);
+				map.put("roomimg2", obj[12]);
+				map.put("roomimg3", obj[13]);
+				map.put("roomimg4", obj[14]);
+				map.put("roomimg5", obj[15]);
 				list.add(map);
 			}
 			
@@ -301,10 +311,10 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	}
 
 	@Override
-	public ResponseBean viewtenanttoroom(Long userid) throws Exception {
+	public ResponseBean viewtenanttoroom(Long userid, Long houseId, Long roomId) throws Exception {
 		ResponseBean bean = new ResponseBean();
 		try {
-			List<Object[]> objectlist=tenantdetailsRepo.viewtenanttoroom(userid);
+			List<Object[]> objectlist=tenantdetailsRepo.viewtenanttoroom(userid,houseId,roomId);
 			List<Map<String, Object>> tenantRoomList = new ArrayList<>();
 			for (Object[] row : objectlist) {
 			    Map<String, Object> tenantRoomMap = new HashMap<>();
@@ -327,6 +337,29 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 			bean.setStatus(HttpStatus.OK.value());
 			bean.setMessage("Success");
 			bean.setRecord(tenantRoomList);
+		}catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean checkpendingbalanace(Long roomId) throws Exception {
+		ResponseBean bean = new ResponseBean();
+		try {
+			List<PaymentDetails> list=paymentsrepo.getBytenantId(roomId);
+			Long val=0l;
+			if(list.size()==0) {
+				val=0l;
+			}else {
+			PaymentDetails payment=list.get(0);
+				val= ((payment.getRentAmount()== null ? 0 : payment.getRentAmount()) 
+								+ (payment.getPreviousPendingAmount()== null ? 0 : payment.getPreviousPendingAmount()))
+									- (payment.getPaidAmount()== null ? 0 : payment.getPaidAmount());
+			}
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setMessage("Success");
+			bean.setRecord(val);
 		}catch (Exception e) {
 			throw new CustomCheckedException(e);
 		}

@@ -4,6 +4,7 @@
 package com.project.manage.Repository;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jdbc.repository.query.Modifying;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,5 +25,8 @@ public interface PaymentDetailsRepository extends JpaRepository<PaymentDetails, 
 
 	@Query("select Count(*) from PaymentDetails where tenantId=:tenantId and dueDate=:dueDate")
 	Integer checkduplicate(Long tenantId, Date dueDate);
+
+	@Query("from PaymentDetails where roomId=:roomId and statusFlag=0 and deletedFlag=0")
+	List<PaymentDetails> getBytenantId(Long roomId);
 
 }

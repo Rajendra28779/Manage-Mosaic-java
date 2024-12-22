@@ -3,9 +3,15 @@
  */
 package com.project.manage.Controller;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -45,6 +51,29 @@ public class CommonController {
 			map.setErrorMessage(e.getMessage());
 		}
 		return map;
+	}
+	
+	@ResponseBody
+	@GetMapping(value = "/downloadcommondoc")
+	public String downloadcommondoc(HttpServletResponse response, 
+	            @RequestParam("data") String encodedJsonString) throws JSONException {
+	    String resp = "";
+	    try {
+	        byte[] bytes = Base64.getDecoder().decode(encodedJsonString);
+	        String jsonString = new String(bytes, StandardCharsets.UTF_8);
+
+	        JSONObject json = new JSONObject(jsonString);
+	        String fileName = json.getString("f");
+
+	        if (fileName == null || fileName.trim().isEmpty()) {
+	            resp = "File not found";
+	        } else {
+	        	commenserv.downloadcommondoc(fileName, response);
+	        }
+	    } catch (Exception e) {
+	        resp = "Something went wrong: " + e.getMessage();
+	    }
+	    return resp;
 	}
 	
 	

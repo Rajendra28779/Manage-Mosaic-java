@@ -39,6 +39,8 @@ public interface HomeDetailsService {
 
 	ResponseBean onChangeroomgettenanrdata(Long roomId, Long houseId) throws Exception;
 
-	ResponseBean viewtenanttoroom(Long userid) throws Exception;
+	ResponseBean viewtenanttoroom(Long userid, Long houseId, Long roomId) throws Exception;
+
+	ResponseBean checkpendingbalanace(Long roomId) throws Exception;
 
 }

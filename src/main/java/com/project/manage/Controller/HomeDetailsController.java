@@ -146,12 +146,13 @@ public class HomeDetailsController {
 	} 
 	
 	@GetMapping("/viewtenanttoroom")
-	public ResponseBean addtenanttoroom() {
+	public ResponseBean addtenanttoroom(@RequestParam(value = "houseId",required = false) Long houseId,
+			@RequestParam(value = "roomId",required = false) Long roomId) {
 		ResponseBean bean=new ResponseBean();
 		try {
 			String usename=JwtFilter.getusername();
 			Long userid= mastuserrepo.getuserIdfromuserName(usename);
-			bean=homedetailsserv.viewtenanttoroom(userid);
+			bean=homedetailsserv.viewtenanttoroom(userid,houseId,roomId);
 		}catch (Exception e) {
 			e.printStackTrace();
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -180,6 +181,19 @@ public class HomeDetailsController {
 		ResponseBean bean=new ResponseBean();
 		try {
 			bean=homedetailsserv.onChangeroomgettenanrdata(roomId,houseId);
+		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@GetMapping("/checkpendingbalanace")
+	public ResponseBean checkpendingbalanace(@RequestParam(value = "roomId",required = false) Long roomId) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			bean=homedetailsserv.checkpendingbalanace(roomId);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");

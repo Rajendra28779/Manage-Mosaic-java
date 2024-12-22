@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.SimpleMailMessage;
@@ -170,6 +172,24 @@ public class CommenServiceImpl implements CommenService {
 			throw new CustomCheckedException(e);
 		}
 		return coustemFilename;
+	}
+
+	@Override
+	public void downloadcommondoc(String fileName, HttpServletResponse response) throws CustomCheckedException {
+	    try {
+	        String folderName = null;
+	        if (fileName.startsWith(env.getProperty("file.tenant.doc.prifix"))) {
+	            folderName = env.getProperty("file.tenant.doc");
+	        } else if (fileName.startsWith(env.getProperty("file.roomImage.prifix"))) {
+	            folderName = env.getProperty("file.roomImage.folder");
+	        } else {
+	            throw new Exception("Folder not found");
+	        }	 
+	        CommenfileUpload.commenfileDownload(fileName, folderName, response);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new CustomCheckedException("Error while downloading file: " + e.getMessage());
+	    }		
 	}
 
 	
