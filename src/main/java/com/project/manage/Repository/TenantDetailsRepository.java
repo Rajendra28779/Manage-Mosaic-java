@@ -40,8 +40,9 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 			+ "WHERE T.STATUSFLAG=0 AND T.OWNER_ID=?1\r\n"
 			+ "AND T.HOUSE_ID = DECODE(?2,NULL,T.HOUSE_ID,?2) \r\n"
 			+ "AND T.ROOM_ID = DECODE(?3,NULL,T.ROOM_ID,?3) \r\n"
+			+ "AND T.TENANT_ID = DECODE(?4,NULL,T.ROOM_ID,?4) \r\n"
 			+ "ORDER BY T.CREATED_ON DESC", nativeQuery = true)
-	List<Object[]> viewtenanttoroom(Long userid, Long houseId, Long roomId);
+	List<Object[]> viewtenanttoroom(Long userid, Long houseId, Long roomId, Long tenantId);
 
 	@Query( value ="SELECT TEN.TENANT_ID, ten.house_id,ten.room_id,\r\n"
 			+ "        ADD_MONTHS(NVL(PD.DUE_DATE, TEN.EFFECTIVE_DATE), 1) duedate,\r\n"
@@ -59,5 +60,17 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 			+ "WHERE TEN.statusflag = 0\r\n"
 			+ "AND ADD_MONTHS(NVL(PD.DUE_DATE, TEN.EFFECTIVE_DATE), 1) < SYSDATE +5", nativeQuery = true)
 	List<Object[]> getuserlisttopaid();
+
+	TenantDetails findByroomId(Long roomId);
+
+	@Query( value ="SELECT P.PAYMENT_ID,T.TENANT_ID,T.FULL_NAME,T.MOBILE_NO,\r\n"
+			+ "TO_CHAR(P.DUE_DATE,'DD-MON-YYYY'),P.RENT_AMOUNT,H.HOUSE_NAME,R.ROOM_NO,\r\n"
+			+ "P.PRV_PENDING_AMOUNT,P.PRV_MTR_READ,T.ADV_AMOUNT FROM TBL_MST_HM_PAYMENTDETAILS P\r\n"
+			+ "LEFT JOIN TBL_MST_HM_TENANTDETAILS T ON T.TENANT_ID=P.TENANT_ID \r\n"
+			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON T.ROOM_ID=R.ROOM_ID AND T.HOUSE_ID=R.HOUSE_ID\r\n"
+			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON T.HOUSE_ID=H.HOUSE_ID\r\n"
+			+ "WHERE P.STATUSFLAG=0 AND P.DELETEDFLAG= 0 AND P.PAID_STATUS IN (0,2)\r\n"
+			+ "AND T.OWNER_ID=?1 AND T.HOUSE_ID = DECODE(?2,NULL,T.HOUSE_ID,?2)",nativeQuery = true)
+	List<Object[]> gettenantlistforpaymentprocess(Long userid, Long houseId);
 
 }

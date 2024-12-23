@@ -147,12 +147,13 @@ public class HomeDetailsController {
 	
 	@GetMapping("/viewtenanttoroom")
 	public ResponseBean addtenanttoroom(@RequestParam(value = "houseId",required = false) Long houseId,
-			@RequestParam(value = "roomId",required = false) Long roomId) {
+			@RequestParam(value = "roomId",required = false) Long roomId,
+			@RequestParam(value = "tenantId",required = false) Long tenantId) {
 		ResponseBean bean=new ResponseBean();
 		try {
 			String usename=JwtFilter.getusername();
 			Long userid= mastuserrepo.getuserIdfromuserName(usename);
-			bean=homedetailsserv.viewtenanttoroom(userid,houseId,roomId);
+			bean=homedetailsserv.viewtenanttoroom(userid,houseId,roomId,tenantId);
 		}catch (Exception e) {
 			e.printStackTrace();
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -195,6 +196,22 @@ public class HomeDetailsController {
 		try {
 			bean=homedetailsserv.checkpendingbalanace(roomId);
 		}catch (Exception e) {
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@GetMapping("/gettenantlistforpaymentprocess")
+	public ResponseBean gettenantlistforpaymentprocess(@RequestParam(value = "houseId",required = false) Long houseId) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
+			bean=homedetailsserv.gettenantlistforpaymentprocess(houseId,userid);
+		}catch (Exception e) {
+			e.printStackTrace();
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
 			bean.setMessage("Something Went Wrong");
 			bean.setErrorMessage(e.getMessage());

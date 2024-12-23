@@ -311,10 +311,10 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 	}
 
 	@Override
-	public ResponseBean viewtenanttoroom(Long userid, Long houseId, Long roomId) throws Exception {
+	public ResponseBean viewtenanttoroom(Long userid, Long houseId, Long roomId,Long tenantId) throws Exception {
 		ResponseBean bean = new ResponseBean();
 		try {
-			List<Object[]> objectlist=tenantdetailsRepo.viewtenanttoroom(userid,houseId,roomId);
+			List<Object[]> objectlist=tenantdetailsRepo.viewtenanttoroom(userid,houseId,roomId,tenantId);
 			List<Map<String, Object>> tenantRoomList = new ArrayList<>();
 			for (Object[] row : objectlist) {
 			    Map<String, Object> tenantRoomMap = new HashMap<>();
@@ -357,10 +357,46 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 								+ (payment.getPreviousPendingAmount()== null ? 0 : payment.getPreviousPendingAmount()))
 									- (payment.getPaidAmount()== null ? 0 : payment.getPaidAmount());
 			}
+			TenantDetails tenantdata=tenantdetailsRepo.findByroomId(roomId);
+			Map<String,Object> map=new HashMap<>();
+			map.put("val",val);
+			map.put("tenantName",tenantdata!=null?tenantdata.getFullName():"");
+			map.put("tenantMobileNo",tenantdata!=null?tenantdata.getMobileNo():"");
+			
 			bean.setStatus(HttpStatus.OK.value());
 			bean.setMessage("Success");
-			bean.setRecord(val);
+			bean.setRecord(map);
 		}catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean gettenantlistforpaymentprocess(Long houseId, Long userid) throws Exception {
+		ResponseBean bean = new ResponseBean();
+		List<Map<String, Object>> list= new ArrayList<>();
+		try {
+			List<Object[]> objectlist=tenantdetailsRepo.gettenantlistforpaymentprocess(userid,houseId);
+			for (Object[] obj : objectlist) {
+			    Map<String, Object> record = new HashMap<>();
+			    record.put("paymentId", obj[0]);
+			    record.put("tenantId", obj[1]);
+			    record.put("fullName", obj[2]);
+			    record.put("mobileNo", obj[3]);
+			    record.put("dueDate", obj[4]); 
+			    record.put("rentAmount", obj[5]);
+			    record.put("houseName", obj[6]);
+			    record.put("roomNo", obj[7]);
+			    record.put("prvPendingAmount", obj[8]);
+			    record.put("prvMtrRead", obj[9]);
+			    record.put("advamount", obj[10]);
+			    list.add(record);
+			}
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setMessage("Success");
+			bean.setRecord(list);
+		} catch (Exception e) {
 			throw new CustomCheckedException(e);
 		}
 		return bean;
