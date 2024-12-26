@@ -11,6 +11,7 @@ import com.project.manage.Bean.HousedetailsBean;
 import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
 import com.project.manage.Model.HouseRoomdetails;
+import com.project.manage.Model.PaymentDetails;
 import com.project.manage.Model.TenantDetails;
 import com.project.manage.Util.CustomCheckedException;
 
@@ -44,5 +45,9 @@ public interface HomeDetailsService {
 	ResponseBean checkpendingbalanace(Long roomId) throws Exception;
 
 	ResponseBean gettenantlistforpaymentprocess(Long houseId, Long userid) throws Exception;
+
+	ResponseBean getdashboarddata(Long userid) throws Exception;
+
+	ResponseBean savePaymentdetails(PaymentDetails paymentdetails, Long userid) throws Exception;
 
 }
