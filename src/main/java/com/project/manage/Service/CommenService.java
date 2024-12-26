@@ -26,4 +26,12 @@ public interface CommenService {
 
 	void downloadcommondoc(String fileName, HttpServletResponse response) throws CustomCheckedException;
 
+	ResponseBean sendOTPforaddmobileno(String phoneno, String usename) throws CustomCheckedException;
+
+	ResponseBean verifyOTPforaddmobileno(String phoneno, String otpval) throws CustomCheckedException;
+
+	ResponseBean sendOTPforloginthroughno(String phoneno) throws CustomCheckedException;
+
+	ResponseBean verifyOTPforloginthroughno(String phoneno, String otpval) throws CustomCheckedException;
+
 }

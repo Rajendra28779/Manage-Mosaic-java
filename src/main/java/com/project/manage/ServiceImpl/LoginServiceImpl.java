@@ -96,7 +96,7 @@ public class LoginServiceImpl implements LoginService {
 		return map;
 	}
 	
-	private String createuserName(String name) throws CustomCheckedException{
+	public static String getusername(String name) throws CustomCheckedException{
 		String username="";
 		try {
 			String prifix=name.substring(0,3).toUpperCase();
@@ -158,7 +158,7 @@ public class LoginServiceImpl implements LoginService {
 			Integer usernamecheck=1;
 			String username="";
 			while(usernamecheck!=0) {
-				username=createuserName(name);
+				username=getusername(name);
 				usernamecheck=userrepo.usernamecheck(username.trim());
 			}				
 			if(usernamecheck==0) {

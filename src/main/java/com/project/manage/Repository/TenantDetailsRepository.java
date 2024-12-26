@@ -24,11 +24,11 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 			+ "    U.MOBILE AS OWNER_MOBILE,T.HOUSE_ID,TO_CHAR(P.DUE_DATE,'DD-MON-YYYY'),\r\n"
 			+ "	   P.PRV_PENDING_AMOUNT\r\n"
 			+ "FROM TBL_MST_HM_TENANTDETAILS T\r\n"
-			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON T.HOUSE_ID = H.HOUSE_ID AND T.OWNER_ID = H.OWNER_ID\r\n"
-			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON T.ROOM_ID = R.ROOM_ID AND T.HOUSE_ID = R.HOUSE_ID AND T.OWNER_ID = R.OWNER_ID\r\n"
-			+ "LEFT JOIN TBL_MST_USERDETAILS U ON U.USERID = T.OWNER_ID\r\n"
+			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON T.HOUSE_ID = H.HOUSE_ID AND T.OWNER_ID = H.OWNER_ID AND H.statusflag=0\r\n"
+			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON T.ROOM_ID = R.ROOM_ID AND T.HOUSE_ID = R.HOUSE_ID AND T.OWNER_ID = R.OWNER_ID AND R.statusflag=0\r\n"
+			+ "LEFT JOIN TBL_MST_USERDETAILS U ON U.USERID = T.OWNER_ID AND\r\n"
 			+ "LEFT JOIN TBL_MST_HM_PAYMENTDETAILS P ON T.TENANT_ID = P.TENANT_ID AND P.DELETEDFLAG = 0 AND P.STATUSFLAG = 0 AND P.PAID_STATUS IN(0,3)\r\n"
-			+ "WHERE T.MOBILE_NO =?1",nativeQuery = true)
+			+ "WHERE T.MOBILE_NO =?1 AND T.statusflag=0",nativeQuery = true)
 	List<Object[]> gethousedetailsforuser(String phoneNo);
 
 	@Query("from TenantDetails where houseId=:houseId and roomId=:roomId and statusFlag=0")
@@ -61,7 +61,7 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 			+ ") PD ON TEN.tenant_id = PD.tenant_id  AND TEN.room_id = PD.room_id \r\n"
 			+ "    AND TEN.house_id = PD.house_id AND PD.rn = 1\r\n"
 			+ "WHERE TEN.statusflag = 0\r\n"
-			+ "AND ADD_MONTHS(NVL(PD.DUE_DATE, TEN.EFFECTIVE_DATE), 1) < SYSDATE +5", nativeQuery = true)
+			+ "AND ADD_MONTHS(NVL(PD.DUE_DATE, TEN.EFFECTIVE_DATE), 1) < SYSDATE +3", nativeQuery = true)
 	List<Object[]> getuserlisttopaid();
 
 	TenantDetails findByroomId(Long roomId);

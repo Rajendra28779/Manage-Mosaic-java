@@ -37,14 +37,22 @@ public class MstUserServiceImpl implements MstUserService {
 				if(emailcheck==0) {
 					Integer phonenocheck=mstuserrepo.phonenocheck(usermodel.getMobileNo());
 					if(phonenocheck==0) {
-						usermodel.setPassword(passwordEncoder.encode(usermodel.getPassword()));
-						usermodel.setFullname(usermodel.getFirstName().trim()+" "+usermodel.getLastName().trim());
-						usermodel.setGroupId(2);
-						usermodel.setCreatedOn(Calendar.getInstance().getTime());
-						usermodel.setStatusFlag(0);
-						mstuserrepo.save(usermodel);
-						bean.setStatus(HttpStatus.OK.value());
-						bean.setMessage("Success");
+						Integer usernamecheck=1;
+						String username="";
+						while(usernamecheck!=0) {
+							username=LoginServiceImpl.getusername(usermodel.getFirstName().trim());
+							usernamecheck=mstuserrepo.usernamecheck(username.trim());
+						}
+						if(usernamecheck==0) {
+							usermodel.setPassword(passwordEncoder.encode(usermodel.getPassword()));
+							usermodel.setFullname(usermodel.getFirstName().trim()+" "+usermodel.getLastName().trim());
+							usermodel.setGroupId(2);
+							usermodel.setCreatedOn(Calendar.getInstance().getTime());
+							usermodel.setStatusFlag(0);
+							mstuserrepo.save(usermodel);
+							bean.setStatus(HttpStatus.OK.value());
+							bean.setMessage("Success");
+						}
 					}else {
 						bean.setStatus(HttpStatus.NOT_ACCEPTABLE.value());
 						bean.setMessage("MobileNo Taken By Another User !");

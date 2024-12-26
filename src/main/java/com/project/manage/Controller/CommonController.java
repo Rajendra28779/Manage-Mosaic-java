@@ -5,7 +5,6 @@ package com.project.manage.Controller;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,10 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nimbusds.jose.shaded.json.writer.BeansMapper.Bean;
 import com.project.manage.Bean.ResponseBean;
-import com.project.manage.Model.RepairRequest;
 import com.project.manage.Service.CommenService;
+import com.project.manage.config.JwtFilter;
 
 /**
  * Rajendra
@@ -45,6 +42,65 @@ public class CommonController {
 		ResponseBean map=new ResponseBean();
 		try {
 			map=commenserv.rqstforcontact(mapobj);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
+	}	
+	
+	@GetMapping(value = "/sendOTPforaddmobileno")
+	@ResponseBody
+	public ResponseBean sendOTPforaddmobileno(@RequestParam(value = "phoneno" ,required = false) String phoneno) {
+		ResponseBean map=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			map=commenserv.sendOTPforaddmobileno(phoneno,usename);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
+	}
+	
+	@GetMapping(value = "/verifyOTPforaddmobileno")
+	@ResponseBody
+	public ResponseBean verifyOTPforaddmobileno(@RequestParam(value = "phoneno" ,required = false) String phoneno,
+			@RequestParam(value = "otpval" ,required = false) String otpval) {
+		ResponseBean map=new ResponseBean();
+		try {
+			map=commenserv.verifyOTPforaddmobileno(phoneno,otpval);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
+	}
+	
+	@GetMapping(value = "/sendOTPforloginthroughno")
+	@ResponseBody
+	public ResponseBean sendOTPforloginthroughno(@RequestParam(value = "phoneno" ,required = false) String phoneno) {
+		ResponseBean map=new ResponseBean();
+		try {
+			map=commenserv.sendOTPforloginthroughno(phoneno);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
+	}
+	
+	@GetMapping(value = "/verifyOTPforloginthroughno")
+	@ResponseBody
+	public ResponseBean verifyOTPforloginthroughno(@RequestParam(value = "phoneno" ,required = false) String phoneno,
+			@RequestParam(value = "otpval" ,required = false) String otpval) {
+		ResponseBean map=new ResponseBean();
+		try {
+			map=commenserv.verifyOTPforloginthroughno(phoneno,otpval);
 		}catch (Exception e) {
 			map.setStatus(400);
 			map.setMessage("Something Went Wrong !");
@@ -75,6 +131,7 @@ public class CommonController {
 	    }
 	    return resp;
 	}
+	
 	
 	
 }

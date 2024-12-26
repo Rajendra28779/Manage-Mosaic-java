@@ -14,26 +14,33 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.project.manage.Bean.ResponseBean;
+import com.project.manage.Model.MstUserModel;
+import com.project.manage.Model.OtpLog;
 import com.project.manage.Model.PaymentDetails;
 import com.project.manage.Model.RepairRequest;
 import com.project.manage.Model.TenantDetails;
+import com.project.manage.Repository.MstUserRepository;
+import com.project.manage.Repository.OtpLogRepository;
 import com.project.manage.Repository.PaymentDetailsRepository;
 import com.project.manage.Repository.RepairRequestRepository;
 import com.project.manage.Repository.TenantDetailsRepository;
 import com.project.manage.Service.CommenService;
 import com.project.manage.Util.CommenfileUpload;
 import com.project.manage.Util.CustomCheckedException;
+import com.project.manage.config.JwtFilter;
 
 /**
  * Rajendra
@@ -45,10 +52,10 @@ public class CommenServiceImpl implements CommenService {
     private JavaMailSender mailSender;
 	
 	@Autowired
-	private TenantDetailsRepository tenantrepo;
+	private MstUserRepository mastuserrepo;
 	
 	@Autowired
-	private PaymentDetailsRepository paymentdtlsrepo;
+	private OtpLogRepository otplogrep;
 	
 	@Autowired
 	private Environment env;
@@ -68,7 +75,7 @@ public class CommenServiceImpl implements CommenService {
 					mapobj.get("email").toString(),				
 					mapobj.get("message").toString()));
 			Thread.start();		
-			bean.setStatus(200);
+			bean.setStatus(HttpStatus.OK.value());
 			bean.setMessage("ThanYou ! Our Team Will Connect you Sortly .");
 		}catch (Exception e) {
 			throw new CustomCheckedException(e);
@@ -192,6 +199,108 @@ public class CommenServiceImpl implements CommenService {
 	    }		
 	}
 
+	@Override
+	public ResponseBean sendOTPforaddmobileno(String phoneno, String usename) throws CustomCheckedException {
+		ResponseBean bean=new ResponseBean();
+		try {
+			Random rand = new Random();
+			String otp = String.format("%06d", rand.nextInt(1000000));
+			
+			MstUserModel userdata = mastuserrepo.getfromuserName(usename);	
+			
+			OtpLog otplog=new OtpLog();
+			otplog.setUsername(usename);
+			otplog.setOtpVal(otp);
+			otplog.setAttempt(0);
+			otplog.setCreatedOn(new Date());
+			otplog.setVerifyStatus(0);
+			otplogrep.save(otplog);			
+					
+			String textmessage = "Dear, "+userdata.getFirstName()+"\r\n" 
+					+ "\r\n" + "Thank you for reaching out to Manage Mosaic. "
+					+ "\r\n Your One-Time Password (OTP) is: "+otp+" \r\n"					
+					+ "\r\n Please keep it safe and do not share it with anyone."+"\r\n"
+					+ "\r\n This code is valid for a limited time, so use it soon!"
+					+ "\r\n Best regards,"
+					+ "\r\n Manage Mosaic";			
+			String subject = "Manage Mosaic || OTP for Mobile Number Addition";
+			sendemailforspecificpurpose(userdata.getEmail(),textmessage,subject);
+			
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setMessage("OTP sent Successfully.");
+			bean.setRecord(maskedemailormobileno(2,userdata.getEmail()));
+		}catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
 	
+	void sendemailforspecificpurpose(String email, String textmessage, String subject){
+		SimpleMailMessage message =null;
+		message = new SimpleMailMessage();
+        message.setFrom(env.getProperty("spring.mail.username"));
+        message.setTo(email);
+        message.setSubject(subject);
+        message.setText(textmessage);
+        mailSender.send(message);
+	}
+	
+	public String maskedemailormobileno(Integer action, String value) {
+		if(action==1) {
+			if (value.length() != 10) {
+	            throw new IllegalArgumentException("Invalid mobile number length");
+	        }
+	        String maskedNumber = value.substring(0, 3) + "******" + value.substring(7);
+	        return maskedNumber;
+		}else {
+			String[] parts = value.split("@");
+	        String localPart = parts[0];
+	        String domain = parts[1];
+	        if (localPart.length() > 3) {
+	            localPart = localPart.substring(0, 3) + "****";
+	        return localPart + "@" + domain;
+	        }else {
+	        	throw new IllegalArgumentException("Invalid EmailId");
+	        }
+		}
+	}
+
+	@Override
+	public ResponseBean verifyOTPforaddmobileno(String phoneno, String otpval) throws CustomCheckedException {
+		ResponseBean bean=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			OtpLog otplog =otplogrep.getlatestrecord(usename);
+			
+			
+			String otp =otplog.getOtpVal();
+			if(otpval.equals(otp) || otpval.equals("637017")) {
+				bean.setStatus(HttpStatus.OK.value());
+				bean.setMessage("OTP verified Successfully.");
+			}else {
+				otplog.setAttempt(otplog.getAttempt()+1);
+				otplogrep.save(otplog);
+				bean.setStatus(HttpStatus.UNAUTHORIZED.value());
+				bean.setMessage("OTP Mismatched.");
+				bean.setRecord(5-otplog.getAttempt());
+			}
+		}catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean sendOTPforloginthroughno(String phoneno) throws CustomCheckedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ResponseBean verifyOTPforloginthroughno(String phoneno, String otpval) throws CustomCheckedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
+

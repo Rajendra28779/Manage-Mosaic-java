@@ -40,6 +40,9 @@ public interface MstUserRepository extends JpaRepository<MstUserModel, Long> {
 
 	@Query("Select userId from MstUserModel where userName=:username")
 	Long getuserIdfromuserName(String username);
+
+	@Query("from MstUserModel where userName=:username and statusFlag=0")
+	MstUserModel getfromuserName(String usename);
 	
 
 }

@@ -57,9 +57,11 @@ public class HomeDetailsController {
 	}
 	
 	@GetMapping("/gethomedetails")
-	public ResponseBean gethomedetails(@RequestParam(value = "userid",required = false) Long userid) {
+	public ResponseBean gethomedetails() {
 		ResponseBean bean=new ResponseBean();
 		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
 			bean=homedetailsserv.gethomedetails(userid);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -70,10 +72,11 @@ public class HomeDetailsController {
 	}	
 	
 	@GetMapping("/getdisplayhousedetails")
-	public Map<String, Object> getdisplayhousedetails(@RequestParam(value = "userid",required = false) Long userid,
-			@RequestParam(value = "houseId",required = false) Long houseId) {
+	public Map<String, Object> getdisplayhousedetails(@RequestParam(value = "houseId",required = false) Long houseId) {
 		Map<String, Object> bean=new HashMap<>();
 		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
 			bean=homedetailsserv.getdisplayhousedetails(userid,houseId);
 		}catch (Exception e) {
 			bean.put("status",HttpStatus.BAD_REQUEST.value());
@@ -84,9 +87,11 @@ public class HomeDetailsController {
 	}
 	
 	@GetMapping("/gethousemasterData")
-	public ResponseBean gethousemasterData(@RequestParam(value = "userId",required = false) Long userid) {
+	public ResponseBean gethousemasterData() {
 		ResponseBean bean=new ResponseBean();
 		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
 			bean=homedetailsserv.gethousemasterData(userid);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -97,10 +102,11 @@ public class HomeDetailsController {
 	}
 	
 	@GetMapping("/getroommasterData")
-	public ResponseBean getroommasterData(@RequestParam(value = "userId",required = false) Long userid,
-			@RequestParam(value = "houseId",required = false) Long houseId) {
+	public ResponseBean getroommasterData(@RequestParam(value = "houseId",required = false) Long houseId) {
 		ResponseBean bean=new ResponseBean();
 		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
 			bean=homedetailsserv.getroommasterData(userid,houseId);
 		}catch (Exception e) {
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());

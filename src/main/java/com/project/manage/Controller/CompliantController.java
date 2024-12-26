@@ -50,9 +50,11 @@ public class CompliantController {
 	
 	@GetMapping(value = "/getmaintanceTrackingRecord")
 	@ResponseBody
-	public ResponseBean savehousemaintancerqst(@RequestParam(value = "userId",required = false) Long userid) {
+	public ResponseBean savehousemaintancerqst() {
 		ResponseBean map=new ResponseBean();
 		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
 			map=compliantserv.getrqstdetailsfortrackt(userid);
 		}catch (Exception e) {
 			map.setStatus(400);
