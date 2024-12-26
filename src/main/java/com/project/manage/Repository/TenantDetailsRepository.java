@@ -17,15 +17,18 @@ import com.project.manage.Model.TenantDetails;
 @Repository
 public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Long> {
 
-	@Query(value="SELECT T.TENANT_ID,T.MOBILE_NO,T.RENT_AMOUNT,\r\n"
-			+ "        T.ADV_AMOUNT,TO_CHAR(T.EFFECTIVE_DATE, 'DD-MON-YYYY'),\r\n"
-			+ "        TO_CHAR(ADD_MONTHS(EFFECTIVE_DATE, 1), 'DD-MON-YYYY') AS ONE_MONTH_AFTER,\r\n"
-			+ "        'N/A',H.HOUSE_NAME,R.ROOM_NO,U.FULLNAME,U.MOBILE,T.HOUSE_ID\r\n"
+	@Query(value="SELECT \r\n"
+			+ "    T.TENANT_ID,T.MOBILE_NO,T.RENT_AMOUNT,T.ADV_AMOUNT,\r\n"
+			+ "    TO_CHAR(T.EFFECTIVE_DATE, 'DD-MON-YYYY') AS EFFECTIVE_DATE,\r\n"
+			+ "    H.HOUSE_NAME,R.ROOM_NO,U.FULLNAME AS OWNER_NAME,\r\n"
+			+ "    U.MOBILE AS OWNER_MOBILE,T.HOUSE_ID,TO_CHAR(P.DUE_DATE,'DD-MON-YYYY'),\r\n"
+			+ "	   P.PRV_PENDING_AMOUNT\r\n"
 			+ "FROM TBL_MST_HM_TENANTDETAILS T\r\n"
-			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON T.HOUSE_ID =H.HOUSE_ID AND T.OWNER_ID=H.OWNER_ID\r\n"
-			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON T.ROOM_ID = R.ROOM_ID AND T.HOUSE_ID =R.HOUSE_ID AND T.OWNER_ID=R.OWNER_ID\r\n"
-			+ "LEFT JOIN TBL_MST_USERDETAILS U ON U.USERID=T.OWNER_ID\r\n"
-			+ "WHERE T.MOBILE_NO=?1",nativeQuery = true)
+			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON T.HOUSE_ID = H.HOUSE_ID AND T.OWNER_ID = H.OWNER_ID\r\n"
+			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON T.ROOM_ID = R.ROOM_ID AND T.HOUSE_ID = R.HOUSE_ID AND T.OWNER_ID = R.OWNER_ID\r\n"
+			+ "LEFT JOIN TBL_MST_USERDETAILS U ON U.USERID = T.OWNER_ID\r\n"
+			+ "LEFT JOIN TBL_MST_HM_PAYMENTDETAILS P ON T.TENANT_ID = P.TENANT_ID AND P.DELETEDFLAG = 0 AND P.STATUSFLAG = 0 AND P.PAID_STATUS IN(0,3)\r\n"
+			+ "WHERE T.MOBILE_NO =?1",nativeQuery = true)
 	List<Object[]> gethousedetailsforuser(String phoneNo);
 
 	@Query("from TenantDetails where houseId=:houseId and roomId=:roomId and statusFlag=0")
@@ -40,7 +43,7 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 			+ "WHERE T.STATUSFLAG=0 AND T.OWNER_ID=?1\r\n"
 			+ "AND T.HOUSE_ID = DECODE(?2,NULL,T.HOUSE_ID,?2) \r\n"
 			+ "AND T.ROOM_ID = DECODE(?3,NULL,T.ROOM_ID,?3) \r\n"
-			+ "AND T.TENANT_ID = DECODE(?4,NULL,T.ROOM_ID,?4) \r\n"
+			+ "AND T.TENANT_ID = DECODE(?4,NULL,T.TENANT_ID,?4) \r\n"
 			+ "ORDER BY T.CREATED_ON DESC", nativeQuery = true)
 	List<Object[]> viewtenanttoroom(Long userid, Long houseId, Long roomId, Long tenantId);
 
@@ -65,12 +68,26 @@ public interface TenantDetailsRepository extends JpaRepository<TenantDetails, Lo
 
 	@Query( value ="SELECT P.PAYMENT_ID,T.TENANT_ID,T.FULL_NAME,T.MOBILE_NO,\r\n"
 			+ "TO_CHAR(P.DUE_DATE,'DD-MON-YYYY'),P.RENT_AMOUNT,H.HOUSE_NAME,R.ROOM_NO,\r\n"
-			+ "P.PRV_PENDING_AMOUNT,P.PRV_MTR_READ,T.ADV_AMOUNT FROM TBL_MST_HM_PAYMENTDETAILS P\r\n"
+			+ "P.PRV_PENDING_AMOUNT,P.PRV_MTR_READ,T.ADV_AMOUNT,P.PAID_STATUS,P.CURRENT_BILL FROM TBL_MST_HM_PAYMENTDETAILS P\r\n"
 			+ "LEFT JOIN TBL_MST_HM_TENANTDETAILS T ON T.TENANT_ID=P.TENANT_ID \r\n"
 			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON T.ROOM_ID=R.ROOM_ID AND T.HOUSE_ID=R.HOUSE_ID\r\n"
 			+ "LEFT JOIN TBL_MST_HM_HOMEDETAILS H ON T.HOUSE_ID=H.HOUSE_ID\r\n"
 			+ "WHERE P.STATUSFLAG=0 AND P.DELETEDFLAG= 0 AND P.PAID_STATUS IN (0,2)\r\n"
 			+ "AND T.OWNER_ID=?1 AND T.HOUSE_ID = DECODE(?2,NULL,T.HOUSE_ID,?2)",nativeQuery = true)
 	List<Object[]> gettenantlistforpaymentprocess(Long userid, Long houseId);
+
+	@Query( value ="SELECT \r\n"
+			+ "    COUNT(DISTINCT H.HOUSE_ID) AS HOME_COUNT,\r\n"
+			+ "    COUNT(DISTINCT R.ROOM_ID) AS ROOM_COUNT,\r\n"
+			+ "    COUNT(DISTINCT T.TENANT_ID) AS NO_OF_ROOM,\r\n"
+			+ "    (COUNT(DISTINCT R.ROOM_ID) - COUNT(DISTINCT T.TENANT_ID)) AS VACANT_ROOMS,\r\n"
+			+ "    0 ADVANCE_BOOKING,\r\n"
+			+ "    SUM(DISTINCT T.NO_OF_MEMBER) AS TENANT_COUNT    \r\n"
+			+ "FROM TBL_MST_HM_HOMEDETAILS H\r\n"
+			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON R.HOUSE_ID=H.HOUSE_ID AND R.OWNER_ID=H.OWNER_ID AND R.STATUSFLAG=0\r\n"
+			+ "LEFT JOIN TBL_MST_HM_TENANTDETAILS T ON T.ROOM_ID=R.ROOM_ID AND T.HOUSE_ID=H.HOUSE_ID \r\n"
+			+ "        AND T.OWNER_ID=H.OWNER_ID AND T.STATUSFLAG=0\r\n"
+			+ "WHERE H.OWNER_ID=?1 AND H.STATUSFLAG=0",nativeQuery = true)
+	List<Object[]> roomcountdata(Long userid);
 
 }

@@ -271,13 +271,13 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 				map.put("rentAmount", obj[2]);
 				map.put("advAmount", obj[3]);
 				map.put("efectdate", obj[4]);
-				map.put("paymentdate", obj[5]);
-				map.put("lastpaymentdate", obj[6]);
-				map.put("houseName", obj[7]);
-				map.put("roomNo", obj[8]);
-				map.put("ownerName", obj[9]);
-				map.put("ownerMobile", obj[10]);
-				map.put("houseId", obj[11]);
+				map.put("houseName", obj[5]);
+				map.put("roomNo", obj[6]);
+				map.put("ownerName", obj[7]);
+				map.put("ownerMobile", obj[8]);
+				map.put("houseId", obj[9]);
+				map.put("deudate", obj[10]);
+				map.put("prvamt", obj[11]);
 				list.add(map);
 			}
 			bean.setStatus(HttpStatus.OK.value());
@@ -391,12 +391,84 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 			    record.put("prvPendingAmount", obj[8]);
 			    record.put("prvMtrRead", obj[9]);
 			    record.put("advamount", obj[10]);
+			    record.put("paidstatus", obj[11]);
+			    record.put("currBill", obj[12]);
 			    list.add(record);
 			}
 			bean.setStatus(HttpStatus.OK.value());
 			bean.setMessage("Success");
 			bean.setRecord(list);
 		} catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean getdashboarddata(Long userid) throws Exception {
+		ResponseBean bean = new ResponseBean();
+		try {
+			Map<String,Object> map=new HashMap<>();
+			
+			List<Object[]> roomcountdata = tenantdetailsRepo.roomcountdata(userid);
+			Map<String,Object> mapobj=new HashMap<>();
+			for(Object[] obj:roomcountdata) {				
+				mapobj.put("homecount", obj[0]);
+				mapobj.put("roomcount", obj[1]);				
+				mapobj.put("tenantcount", obj[2]);
+				mapobj.put("available", obj[3]);
+				mapobj.put("advancebook", obj[4]);
+				mapobj.put("tenantfamily", obj[5]);
+			}
+			map.put("roomcountdata",mapobj);
+			
+			List<Object[]> revenue = homeroomdetailsrepo.revenuecount(userid);
+			Map<String,Object> maprevj=new HashMap<>();
+			for(Object[] obj:revenue) {				
+				maprevj.put("totalrevenue", obj[0]);
+				maprevj.put("yearlyrevenue", obj[1]);				
+				maprevj.put("monthlyrevenue", obj[2]);
+			}
+			map.put("revenuecount",maprevj);
+			
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setMessage("Success");
+			bean.setRecord(map);
+		} catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean savePaymentdetails(PaymentDetails paymentdetails, Long userid) throws Exception {
+		ResponseBean bean = new ResponseBean();
+		try {
+			if(paymentdetails.getPaidStatus() == 0) {
+				PaymentDetails paymentdata = paymentsrepo.findById(paymentdetails.getPaymentId()).get();
+				paymentdata.setTakenBy(userid);
+				paymentdata.setCurrentMeterRead(paymentdetails.getCurrentMeterRead());
+				Long currentbill = 0l;
+				if( paymentdata.getPreviousMeterRead()==null || paymentdetails.getCurrentMeterRead()==null) {
+					currentbill =0l;
+				} else {
+					currentbill = (paymentdetails.getCurrentMeterRead() - paymentdata.getPreviousMeterRead()) * paymentdetails.getPrice();
+				}
+				paymentdata.setCurrentBill(currentbill);
+				paymentdata.setTotalBill(paymentdata.getRentAmount() + paymentdata.getPreviousPendingAmount() + currentbill);
+				paymentdata.setPaidAmount(paymentdetails.getPaidAmount());
+				Long pendingamount = paymentdata.getTotalBill()-paymentdata.getPaidAmount();
+				paymentdata.setCurrentPendingAmount(pendingamount < 0 ? 0 : pendingamount);
+				paymentdata.setPaidOn(new Date());
+				paymentdata.setPaidStatus(paymentdata.getCurrentPendingAmount() == 0 ? 1 : 2 );
+				paymentsrepo.save(paymentdata);
+				
+			} else {
+				
+			}			
+			bean.setStatus(HttpStatus.OK.value());
+			bean.setMessage("Success");
+		}catch (Exception e) {
 			throw new CustomCheckedException(e);
 		}
 		return bean;

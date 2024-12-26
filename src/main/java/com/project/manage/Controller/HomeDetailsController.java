@@ -22,6 +22,7 @@ import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.HomeDetails;
 import com.project.manage.Model.HouseRoomdetails;
 import com.project.manage.Model.MstUserModel;
+import com.project.manage.Model.PaymentDetails;
 import com.project.manage.Model.TenantDetails;
 import com.project.manage.Repository.MstUserRepository;
 import com.project.manage.Service.HomeDetailsService;
@@ -210,6 +211,38 @@ public class HomeDetailsController {
 			String usename=JwtFilter.getusername();
 			Long userid= mastuserrepo.getuserIdfromuserName(usename);
 			bean=homedetailsserv.gettenantlistforpaymentprocess(houseId,userid);
+		}catch (Exception e) {
+			e.printStackTrace();
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@GetMapping("/getdashboarddata")
+	public ResponseBean getdashboarddata() {
+		ResponseBean bean=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
+			bean=homedetailsserv.getdashboarddata(userid);
+		}catch (Exception e) {
+			e.printStackTrace();
+			bean.setStatus(HttpStatus.BAD_REQUEST.value());
+			bean.setMessage("Something Went Wrong");
+			bean.setErrorMessage(e.getMessage());
+		}
+		return bean;
+	}
+	
+	@PostMapping("/savePaymentdetails")
+	public ResponseBean savePaymentdetails(@RequestBody PaymentDetails paymentdetails) {
+		ResponseBean bean=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			Long userid= mastuserrepo.getuserIdfromuserName(usename);
+			bean=homedetailsserv.savePaymentdetails(paymentdetails,userid);
 		}catch (Exception e) {
 			e.printStackTrace();
 			bean.setStatus(HttpStatus.BAD_REQUEST.value());

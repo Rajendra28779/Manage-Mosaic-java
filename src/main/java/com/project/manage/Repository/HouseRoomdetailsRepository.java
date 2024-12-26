@@ -41,4 +41,23 @@ public interface HouseRoomdetailsRepository extends JpaRepository<HouseRoomdetai
 			+ "    AND T.HOUSE_ID=r.house_id AND T.rOOM_ID = R.ROOM_ID AND t.statusflag=0\r\n"
 			+ "    WHERE R.house_id=?1 ORDER BY R.ROOM_ID DESC",nativeQuery = true)
 	List<Object[]> getroomlistforhome(Long housedetails);
+
+	@Query(value = "SELECT \r\n"
+			+ "    NVL(SUM(REP.PAID_AMOUNT),0) AS TOTAL_REVENUE,\r\n"
+			+ "    SUM(CASE \r\n"
+			+ "        WHEN TO_CHAR(REP.PAID_ON, 'YYYY') = TO_CHAR(SYSDATE, 'YYYY') \r\n"
+			+ "        THEN REP.PAID_AMOUNT ELSE 0 END) AS EARNINGS_THIS_YEAR,\r\n"
+			+ "    SUM(CASE \r\n"
+			+ "        WHEN TO_CHAR(REP.PAID_ON, 'YYYY-MM') = TO_CHAR(SYSDATE, 'YYYY-MM') \r\n"
+			+ "        THEN REP.PAID_AMOUNT ELSE 0 END) AS EARNINGS_THIS_MONTH\r\n"
+			+ "FROM \r\n"
+			+ "    TBL_MST_HM_PAYMENTDETAILS REP\r\n"
+			+ "LEFT JOIN \r\n"
+			+ "    TBL_MST_HM_ROOMDETAILS R \r\n"
+			+ "    ON REP.ROOM_ID = R.ROOM_ID \r\n"
+			+ "    AND REP.HOUSE_ID = R.HOUSE_ID\r\n"
+			+ "WHERE \r\n"
+			+ "    REP.STATUSFLAG = 0 \r\n"
+			+ "    AND R.OWNER_ID = ?1",nativeQuery = true)
+	List<Object[]> revenuecount(Long userid);
 }

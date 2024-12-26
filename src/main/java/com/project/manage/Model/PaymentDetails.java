@@ -76,4 +76,7 @@ public class PaymentDetails {
 
     @Column(name = "STATUSFLAG")
     private Integer statusFlag;
+    
+    @Transient
+    private Integer price;
 }
