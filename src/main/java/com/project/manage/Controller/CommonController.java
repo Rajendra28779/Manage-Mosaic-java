@@ -78,36 +78,7 @@ public class CommonController {
 			map.setErrorMessage(e.getMessage());
 		}
 		return map;
-	}
-	
-	@GetMapping(value = "/sendOTPforloginthroughno")
-	@ResponseBody
-	public ResponseBean sendOTPforloginthroughno(@RequestParam(value = "phoneno" ,required = false) String phoneno) {
-		ResponseBean map=new ResponseBean();
-		try {
-			map=commenserv.sendOTPforloginthroughno(phoneno);
-		}catch (Exception e) {
-			map.setStatus(400);
-			map.setMessage("Something Went Wrong !");
-			map.setErrorMessage(e.getMessage());
-		}
-		return map;
-	}
-	
-	@GetMapping(value = "/verifyOTPforloginthroughno")
-	@ResponseBody
-	public ResponseBean verifyOTPforloginthroughno(@RequestParam(value = "phoneno" ,required = false) String phoneno,
-			@RequestParam(value = "otpval" ,required = false) String otpval) {
-		ResponseBean map=new ResponseBean();
-		try {
-			map=commenserv.verifyOTPforloginthroughno(phoneno,otpval);
-		}catch (Exception e) {
-			map.setStatus(400);
-			map.setMessage("Something Went Wrong !");
-			map.setErrorMessage(e.getMessage());
-		}
-		return map;
-	}
+	}	
 	
 	@ResponseBody
 	@GetMapping(value = "/downloadcommondoc")

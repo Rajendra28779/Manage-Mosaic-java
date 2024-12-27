@@ -393,6 +393,9 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 			    record.put("advamount", obj[10]);
 			    record.put("paidstatus", obj[11]);
 			    record.put("currBill", obj[12]);
+			    record.put("paidamount", obj[13]);
+			    record.put("curpendingamt", obj[14]);
+			    record.put("totalamount", obj[15]);
 			    list.add(record);
 			}
 			bean.setStatus(HttpStatus.OK.value());
@@ -464,7 +467,25 @@ public class HomeDetailsServiceImpl implements HomeDetailsService{
 				paymentsrepo.save(paymentdata);
 				
 			} else {
+				PaymentDetails paymentdata = paymentsrepo.findById(paymentdetails.getPaymentId()).get();
+				if(paymentdetails.getCurrentMeterRead()!=0) {
+					paymentdata.setCurrentMeterRead(paymentdetails.getCurrentMeterRead());
+					Long currentbill = 0l;
+					if( paymentdata.getPreviousMeterRead()==null || paymentdetails.getCurrentMeterRead()==null) {
+						currentbill =0l;
+					} else {
+						currentbill = (paymentdetails.getCurrentMeterRead() - paymentdata.getPreviousMeterRead()) * paymentdetails.getPrice();
+						paymentdata.setTotalBill(paymentdata.getTotalBill()+currentbill);
+					}				
+					paymentdata.setCurrentBill(currentbill);
+				}
 				
+				paymentdata.setPaidAmount(paymentdata.getPaidAmount()+paymentdetails.getPaidAmount());
+				Long pendingamount = paymentdata.getTotalBill()-paymentdata.getPaidAmount();
+				paymentdata.setCurrentPendingAmount(pendingamount < 0 ? 0 : pendingamount);
+				paymentdata.setPaidOn(new Date());
+				paymentdata.setPaidStatus(paymentdata.getCurrentPendingAmount() == 0 ? 1 : 2 );
+				paymentsrepo.save(paymentdata);
 			}			
 			bean.setStatus(HttpStatus.OK.value());
 			bean.setMessage("Success");

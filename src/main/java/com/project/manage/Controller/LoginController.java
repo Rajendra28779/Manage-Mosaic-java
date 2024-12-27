@@ -11,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.api.client.auth.openidconnect.IdToken.Payload;
@@ -21,7 +24,9 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.project.manage.Bean.ResponseBean;
 import com.project.manage.Model.MstUserModel;
+import com.project.manage.Service.CommenService;
 import com.project.manage.Service.LoginService;
 import com.project.manage.Util.EncryptionUtils;
 
@@ -35,6 +40,9 @@ public class LoginController {
 	
 	@Autowired
 	private LoginService loginserv;
+	
+	@Autowired
+	private CommenService commenserv;
 	
 	
 	@PostMapping("/google")
@@ -72,5 +80,34 @@ public class LoginController {
 			response.put("error", e.getMessage());
 		}
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping(value = "/sendOTPforloginthroughno")
+	@ResponseBody
+	public ResponseBean sendOTPforloginthroughno(@RequestParam(value = "phoneno" ,required = false) String phoneno) {
+		ResponseBean map=new ResponseBean();
+		try {
+			map=commenserv.sendOTPforloginthroughno(phoneno);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
+	}
+	
+	@GetMapping(value = "/verifyOTPforloginthroughno")
+	@ResponseBody
+	public ResponseBean verifyOTPforloginthroughno(@RequestParam(value = "phoneno" ,required = false) String phoneno,
+			@RequestParam(value = "otpval" ,required = false) String otpval) {
+		ResponseBean map=new ResponseBean();
+		try {
+			map=commenserv.verifyOTPforloginthroughno(phoneno,otpval);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
 	}
 }

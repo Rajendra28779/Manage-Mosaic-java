@@ -24,7 +24,7 @@ public interface HouseRoomdetailsRepository extends JpaRepository<HouseRoomdetai
 			+ "NVL(SUM(T.NO_OF_MEMBER),0) TOTALMEMBER,\r\n"
 			+ "(SELECT SUM(p.rent_amount) FROM tbl_mst_hm_paymentdetails P WHERE H.HOUSE_ID=?2) TOTALAMOUNT\r\n"
 			+ "FROM TBL_MST_HM_HOMEDETAILS H\r\n"
-			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON H.HOUSE_ID=R.HOUSE_ID R.statusflag=0\r\n"
+			+ "LEFT JOIN TBL_MST_HM_ROOMDETAILS R ON H.HOUSE_ID=R.HOUSE_ID and R.statusflag=0\r\n"
 			+ "LEFT JOIN tbl_mst_hm_tenantdetails T ON T.OWNER_ID = r.owner_id\r\n"
 			+ "AND T.HOUSE_ID=r.house_id AND T.ROOM_ID = R.ROOM_ID AND t.statusflag=0\r\n"
 			+ "WHERE H.HOUSE_ID=?2 AND H.OWNER_ID=?1 AND H.statusflag=0\r\n"
