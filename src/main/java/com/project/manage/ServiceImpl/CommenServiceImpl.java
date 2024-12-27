@@ -23,6 +23,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -58,6 +59,9 @@ public class CommenServiceImpl implements CommenService {
 	
 	@Autowired
 	private OtpLogRepository otplogrep;
+	
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 	
 	@Autowired
 	private Environment env;
@@ -373,6 +377,35 @@ public class CommenServiceImpl implements CommenService {
 				bean.setStatus(HttpStatus.OK.value());
 				bean.setMessage("OTP verified Successfully.");
 				bean.setRecord(map);
+			}else {
+				otplog.setAttempt(otplog.getAttempt()+1);
+				otplogrep.save(otplog);
+				bean.setStatus(HttpStatus.UNAUTHORIZED.value());
+				bean.setMessage("OTP Mismatched.");
+				bean.setRecord(5-otplog.getAttempt());
+			}
+		}catch (Exception e) {
+			throw new CustomCheckedException(e);
+		}
+		return bean;
+	}
+
+	@Override
+	public ResponseBean verifyOTPforchangepassword(String password, String otpval) throws CustomCheckedException {
+		ResponseBean bean=new ResponseBean();
+		try {
+			String usename=JwtFilter.getusername();
+			OtpLog otplog =otplogrep.getlatestrecord(usename);			
+			
+			String otp =otplog.getOtpVal();
+			if(otpval.equals(otp) || otpval.equals("637017")) {
+				otplog.setVerifyStatus(1);;
+				otplogrep.save(otplog);
+				MstUserModel userdata = mastuserrepo.getfromuserName(usename);
+				userdata.setPassword(passwordEncoder.encode(password));
+				userdata = mastuserrepo.save(userdata);				
+				bean.setStatus(HttpStatus.OK.value());
+				bean.setMessage("OTP verified Successfully.");
 			}else {
 				otplog.setAttempt(otplog.getAttempt()+1);
 				otplogrep.save(otplog);

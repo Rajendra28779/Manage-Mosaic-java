@@ -34,4 +34,6 @@ public interface CommenService {
 
 	ResponseBean verifyOTPforloginthroughno(String phoneno, String otpval) throws CustomCheckedException;
 
+	ResponseBean verifyOTPforchangepassword(String password, String otpval) throws CustomCheckedException;
+
 }

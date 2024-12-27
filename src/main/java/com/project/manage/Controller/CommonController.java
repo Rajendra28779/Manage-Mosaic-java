@@ -80,6 +80,21 @@ public class CommonController {
 		return map;
 	}	
 	
+	@GetMapping(value = "/verifyOTPforchangepassword")
+	@ResponseBody
+	public ResponseBean verifyOTPforchangepassword(@RequestParam(value = "password" ,required = false) String password,
+			@RequestParam(value = "otpval" ,required = false) String otpval) {
+		ResponseBean map=new ResponseBean();
+		try {
+			map=commenserv.verifyOTPforchangepassword(password,otpval);
+		}catch (Exception e) {
+			map.setStatus(400);
+			map.setMessage("Something Went Wrong !");
+			map.setErrorMessage(e.getMessage());
+		}
+		return map;
+	}
+	
 	@ResponseBody
 	@GetMapping(value = "/downloadcommondoc")
 	public String downloadcommondoc(HttpServletResponse response, 
