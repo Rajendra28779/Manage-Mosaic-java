@@ -227,7 +227,7 @@ public class CommenServiceImpl implements CommenService {
 					+ "\r\n This code is valid for a limited time, so use it soon! \r\n"
 					+ "\r\n Best regards,"
 					+ "\r\n Manage Mosaic";			
-			String subject = "Manage Mosaic || OTP for Mobile Number Addition";
+			String subject = "Manage Mosaic || OTP for Authentication";
 			sendemailforspecificpurpose(userdata.getEmail(),textmessage,subject);
 			
 			bean.setStatus(HttpStatus.OK.value());
@@ -331,7 +331,7 @@ public class CommenServiceImpl implements CommenService {
 						+ "\r\n This code is valid for a limited time, so use it soon! \r\n"
 						+ "\r\n Best regards,"
 						+ "\r\n Manage Mosaic";			
-				String subject = "Manage Mosaic || OTP for Mobile Number Addition";
+				String subject = "Manage Mosaic || OTP for Login.";
 				sendemailforspecificpurpose(userdata.getEmail(),textmessage,subject);
 				
 				bean.setStatus(HttpStatus.OK.value());
