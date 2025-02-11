@@ -18,7 +18,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ResourceBundle;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.util.FileCopyUtils;

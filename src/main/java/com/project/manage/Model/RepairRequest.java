@@ -4,7 +4,7 @@
 package com.project.manage.Model;
 
 import lombok.Data;
-import javax.persistence.*;
+import jakarta.persistence.*;
 import lombok.Data;
 import java.util.Date;
 
